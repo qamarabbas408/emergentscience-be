@@ -24,7 +24,9 @@ class LoginTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJsonStructure(['message', 'data' => ['id', 'name', 'email'], 'token']);
+            ->assertJsonStructure(['success', 'message', 'data' => ['user' => ['id', 'name', 'email'], 'token']])
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Login successful.');
     }
 
     public function test_login_rejects_wrong_credentials(): void

@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 
 class JournalController extends Controller
 {
+    use \App\Http\Controllers\ApiResponse;
+
     public function index(Request $request): JsonResponse
     {
         $query = Journal::query()
@@ -46,23 +48,23 @@ class JournalController extends Controller
         $perPage = min((int) $request->input('per_page', 12), 50);
         $journals = $query->paginate($perPage);
 
-        return response()->json([
-            'data' => JournalResource::collection($journals->items()),
-            'meta' => [
+        return $this->paginated(
+            JournalResource::collection($journals->items()),
+            [
                 'current_page' => $journals->currentPage(),
                 'last_page' => $journals->lastPage(),
                 'per_page' => $journals->perPage(),
                 'total' => $journals->total(),
             ],
-        ]);
+        );
     }
 
-    public function show(Journal $journal): JournalResource|JsonResponse
+    public function show(Journal $journal): JsonResponse
     {
         abort_if(! $journal->is_active, 404);
 
         $journal->load('disciplineCategories');
 
-        return new JournalResource($journal);
+        return $this->success(new JournalResource($journal));
     }
 }

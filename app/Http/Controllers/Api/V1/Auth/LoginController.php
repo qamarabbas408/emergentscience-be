@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Auth;
 
+use App\Http\Controllers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\V1\UserResource;
@@ -11,6 +12,8 @@ use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
+    use ApiResponse;
+
     public function __invoke(LoginRequest $request): JsonResponse
     {
         $user = \App\Models\User::where('email', $request->string('email'))->first();
@@ -29,10 +32,9 @@ class LoginController extends Controller
 
         $token = $user->createToken('app')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Login successful.',
-            'data' => new UserResource($user),
+        return $this->success([
+            'user' => new UserResource($user),
             'token' => $token,
-        ]);
+        ], 'Login successful.');
     }
 }

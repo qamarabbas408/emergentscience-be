@@ -21,8 +21,10 @@ class RegisterTest extends TestCase
         ]);
 
         $response->assertStatus(201)
-            ->assertJsonStructure(['message', 'data' => ['id', 'name', 'email', 'status'], 'token'])
-            ->assertJsonPath('data.status', UserStatus::Active->value);
+            ->assertJsonStructure(['success', 'message', 'data' => ['user' => ['id', 'name', 'email', 'status'], 'token']])
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Registration successful.')
+            ->assertJsonPath('data.user.status', UserStatus::Active->value);
 
         $this->assertDatabaseHas('users', [
             'email' => 'jane@example.com',

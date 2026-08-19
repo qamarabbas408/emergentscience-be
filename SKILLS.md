@@ -38,7 +38,46 @@ composer test        # runs phpunit
 - **Versioning**: URI-prefix versioning via `routes/api/v{n}.php` + `Api\V{n}` controller namespaces — never break an existing versioned contract.
 - **Resources, not arrays**: return `JsonResource`/`ResourceCollection` instances (e.g. `V1\UserResource`); never hand-roll response arrays or sprinkle `toArray` over models.
 - **Validation via FormRequest**: use dedicated `FormRequest` classes for request validation + authorization; keep controllers thin.
-- **Error contracts**: use `ApiResponder` trait + `ApiResponse` class so all errors follow `{"ok": false, "error": "...", "errors": {...}}` with consistent HTTP status mapping.
+- **Response envelope**: every API response MUST use a consistent envelope format. Use the `ApiResponse` trait in controllers.
+
+  **Success (single resource):**
+  ```json
+  {
+    "success": true,
+    "message": "Resource retrieved successfully.",
+    "data": { "id": 1, "title": "..." }
+  }
+  ```
+
+  **Success (collection with pagination):**
+  ```json
+  {
+    "success": true,
+    "message": "Resources retrieved successfully.",
+    "data": [ ... ],
+    "meta": { "current_page": 1, "last_page": 4, "per_page": 12, "total": 43 }
+  }
+  ```
+
+  **Failure (validation):**
+  ```json
+  {
+    "success": false,
+    "message": "The given data was invalid.",
+    "errors": { "email": ["The email field is required."] }
+  }
+  ```
+
+  **Failure (general):**
+  ```json
+  {
+    "success": false,
+    "message": "Resource not found.",
+    "errors": null
+  }
+  ```
+
+- **Error contracts**: use `ApiResponse` trait so all errors follow the envelope with consistent HTTP status mapping.
 - **Status codes**: 200 (read/update), 201 (created with `Location` header), 204 (delete), 401 (unauthenticated), 403 (forbidden), 404 (not found), 422 (validation).
 - **HTTP semantics**: `GET` is safe & idempotent; `POST` creates; `PUT` full replace; `PATCH` partial. Return `204 No Content` for successful delete.
 - **Security**: Sanctum bearer-token auth on protected routes; tokens hashed in DB with hashed random 40-char strings; no tokens in responses/logs; password hashing via `bcrypt`.

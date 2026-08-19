@@ -19,7 +19,8 @@ class DisciplineCategoryApiTest extends TestCase
         $response = $this->getJson('/api/v1/discipline-categories');
 
         $response->assertOk()
-            ->assertJsonStructure(['data' => [['id', 'name', 'slug', 'is_active']]])
+            ->assertJsonStructure(['success', 'message', 'data' => [['id', 'name', 'slug', 'is_active']]])
+            ->assertJsonPath('success', true)
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.name', 'Science');
     }
@@ -39,7 +40,7 @@ class DisciplineCategoryApiTest extends TestCase
 
         $this->getJson("/api/v1/discipline-categories/{$category->id}")
             ->assertOk()
-            ->assertJsonStructure(['data' => ['id', 'name', 'slug', 'is_active']]);
+            ->assertJsonStructure(['success', 'message', 'data' => ['id', 'name', 'slug', 'is_active']]);
     }
 
     public function test_cannot_view_an_inactive_category(): void

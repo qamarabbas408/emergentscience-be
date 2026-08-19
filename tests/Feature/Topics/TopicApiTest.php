@@ -20,7 +20,8 @@ class TopicApiTest extends TestCase
         $response = $this->getJson("/api/v1/journals/{$journal->id}/topics");
 
         $response->assertOk()
-            ->assertJsonStructure(['data' => [['id', 'journal_id', 'slug', 'title', 'is_active']]])
+            ->assertJsonStructure(['success', 'message', 'data' => [['id', 'journal_id', 'slug', 'title', 'is_active']]])
+            ->assertJsonPath('success', true)
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.title', 'Visible Topic');
     }
@@ -66,7 +67,7 @@ class TopicApiTest extends TestCase
         $response = $this->getJson("/api/v1/journals/{$journal->id}/topics/{$topic->id}");
 
         $response->assertOk()
-            ->assertJsonStructure(['data' => ['id', 'journal_id', 'slug', 'title', 'is_active']]);
+            ->assertJsonStructure(['success', 'message', 'data' => ['id', 'journal_id', 'slug', 'title', 'is_active']]);
     }
 
     public function test_cannot_view_topic_from_different_journal(): void

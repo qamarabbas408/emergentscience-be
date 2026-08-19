@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Auth;
 
+use App\Http\Controllers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\V1\UserResource;
@@ -10,6 +11,8 @@ use Illuminate\Http\JsonResponse;
 
 class RegisterController extends Controller
 {
+    use ApiResponse;
+
     public function __invoke(RegisterRequest $request): JsonResponse
     {
         $user = User::create($request->validated());
@@ -17,10 +20,9 @@ class RegisterController extends Controller
 
         $token = $user->createToken('app')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Registration successful.',
-            'data' => new UserResource($user),
+        return $this->created([
+            'user' => new UserResource($user),
             'token' => $token,
-        ], 201);
+        ], 'Registration successful.');
     }
 }

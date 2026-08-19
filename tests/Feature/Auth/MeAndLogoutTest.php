@@ -17,6 +17,8 @@ class MeAndLogoutTest extends TestCase
         $this->actingAs($user, 'sanctum')
             ->getJson('/api/v1/auth/me')
             ->assertStatus(200)
+            ->assertJsonStructure(['success', 'message', 'data' => ['id', 'name', 'email']])
+            ->assertJsonPath('success', true)
             ->assertJsonPath('data.email', $user->email);
     }
 
@@ -31,7 +33,10 @@ class MeAndLogoutTest extends TestCase
         $token = $user->createToken('test')->plainTextToken;
 
         $this->postJson('/api/v1/auth/logout', [], ['Authorization' => 'Bearer '.$token])
-            ->assertStatus(200);
+            ->assertStatus(200)
+            ->assertJsonStructure(['success', 'message'])
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Logged out successfully.');
 
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }

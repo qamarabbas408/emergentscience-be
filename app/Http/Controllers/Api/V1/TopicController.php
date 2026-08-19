@@ -10,6 +10,8 @@ use Illuminate\Http\JsonResponse;
 
 class TopicController extends Controller
 {
+    use \App\Http\Controllers\ApiResponse;
+
     public function index(Journal $journal): JsonResponse
     {
         abort_if(! $journal->is_active, 404);
@@ -21,9 +23,7 @@ class TopicController extends Controller
             ->orderBy('title')
             ->get();
 
-        return response()->json([
-            'data' => TopicResource::collection($topics),
-        ]);
+        return $this->success(TopicResource::collection($topics));
     }
 
     public function show(Journal $journal, Topic $topic): JsonResponse
@@ -32,8 +32,6 @@ class TopicController extends Controller
         abort_if($topic->journal_id !== $journal->id, 404);
         abort_if(! $topic->is_active, 404);
 
-        return response()->json([
-            'data' => new TopicResource($topic),
-        ]);
+        return $this->success(new TopicResource($topic));
     }
 }
