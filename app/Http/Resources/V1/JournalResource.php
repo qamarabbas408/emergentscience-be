@@ -14,19 +14,18 @@ class JournalResource extends JsonResource
             'slug' => $this->slug,
             'title' => $this->title,
             'abbreviation' => $this->abbreviation,
-            'issn' => $this->issn,
-            'eissn' => $this->eissn,
-            'doi_prefix' => $this->doi_prefix,
-            'discipline_categories' => $this->whenLoaded('disciplineCategories', function () {
-                return $this->disciplineCategories->map(fn ($cat) => [
-                    'id' => $cat->id,
-                    'name' => $cat->name,
-                    'slug' => $cat->slug,
-                ]);
+            'tagline' => $this->tagline,
+            'category' => $this->whenLoaded('disciplineCategories', function () {
+                return $this->disciplineCategories->first()?->name;
             }),
-            'license' => $this->license,
-            'scope' => $this->scope,
-            'is_active' => $this->is_active,
+            'is_new' => false,
+            'field_chief_editor' => null,
+            'sections_count' => 0,
+            'articles_count' => 0,
+            'views' => 0,
+            'citations' => 0,
+            'impact_factor' => null,
+            'citescore' => null,
         ];
     }
 }

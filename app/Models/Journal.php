@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['slug', 'title', 'abbreviation', 'issn', 'eissn', 'doi_prefix', 'discipline', 'license', 'scope', 'is_active', 'apc_amount', 'apc_currency'])]
+#[Fillable(['slug', 'title', 'tagline', 'abbreviation', 'issn', 'eissn', 'doi_prefix', 'discipline', 'license', 'scope', 'is_active', 'apc_amount', 'apc_currency'])]
 class Journal extends Model
 {
     use HasFactory;

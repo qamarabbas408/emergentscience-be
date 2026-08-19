@@ -20,6 +20,7 @@ class JournalFactory extends Factory
         return [
             'slug' => $this->faker->unique()->slug,
             'title' => $title,
+            'tagline' => $this->faker->sentence(8),
             'abbreviation' => $this->faker->boolean(70) ? $this->faker->word() . ' Sci.' : null,
             'issn' => $this->faker->numerify('####-####') . ' ' . $this->faker->numerify('####-####'),
             'eissn' => $this->faker->numerify('####-####') . ' ' . $this->faker->numerify('####-####'),
