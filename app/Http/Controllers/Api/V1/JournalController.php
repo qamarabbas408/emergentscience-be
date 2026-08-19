@@ -45,7 +45,7 @@ class JournalController extends Controller
             $query->orderBy('title', 'asc');
         }
 
-        $perPage = min((int) $request->input('per_page', 12), 50);
+        $perPage = max(1, min((int) $request->input('per_page', 12), 50));
         $journals = $query->paginate($perPage);
 
         return $this->paginated(

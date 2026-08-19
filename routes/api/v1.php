@@ -12,14 +12,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
 
-Route::get('/discipline-categories', [DisciplineCategoryController::class, 'index'])->name('discipline-categories.index');
-Route::get('/discipline-categories/{category}', [DisciplineCategoryController::class, 'show'])->name('discipline-categories.show');
-Route::get('/discipline-categories/{category}/journals', [DisciplineCategoryController::class, 'journals'])->name('discipline-categories.journals');
+Route::middleware('throttle:60,1')->group(function (): void {
+    Route::get('/discipline-categories', [DisciplineCategoryController::class, 'index'])->name('discipline-categories.index');
+    Route::get('/discipline-categories/{category}', [DisciplineCategoryController::class, 'show'])->name('discipline-categories.show');
+    Route::get('/discipline-categories/{category}/journals', [DisciplineCategoryController::class, 'journals'])->name('discipline-categories.journals');
 
-Route::get('/journals', [JournalController::class, 'index'])->name('journals.index');
-Route::get('/journals/{journal}', [JournalController::class, 'show'])->name('journals.show');
-Route::get('/journals/{journal}/topics', [TopicController::class, 'index'])->name('journals.topics.index');
-Route::get('/journals/{journal}/topics/{topic}', [TopicController::class, 'show'])->name('journals.topics.show');
+    Route::get('/journals', [JournalController::class, 'index'])->name('journals.index');
+    Route::get('/journals/{journal}', [JournalController::class, 'show'])->name('journals.show');
+    Route::get('/journals/{journal}/topics', [TopicController::class, 'index'])->name('journals.topics.index');
+    Route::get('/journals/{journal}/topics/{topic}', [TopicController::class, 'show'])->name('journals.topics.show');
+});
 
 Route::prefix('auth')->as('auth.')->group(function (): void {
     Route::post('/register', RegisterController::class)->middleware('throttle:10,1')->name('register');
