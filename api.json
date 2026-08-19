@@ -11,6 +11,151 @@
         }
     ],
     "paths": {
+        "/v1/discipline-categories": {
+            "get": {
+                "operationId": "v1.discipline-categories.index",
+                "tags": [
+                    "DisciplineCategory"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Resource retrieved successfully."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/DisciplineCategoryResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/discipline-categories/{category}": {
+            "get": {
+                "operationId": "v1.discipline-categories.show",
+                "tags": [
+                    "DisciplineCategory"
+                ],
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "required": true,
+                        "description": "The category ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Resource retrieved successfully."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/DisciplineCategoryResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            }
+        },
+        "/v1/discipline-categories/{category}/journals": {
+            "get": {
+                "operationId": "v1.discipline-categories.journals",
+                "tags": [
+                    "DisciplineCategory"
+                ],
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "required": true,
+                        "description": "The category ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Resource retrieved successfully."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/JournalResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            }
+        },
         "/v1/health": {
             "get": {
                 "operationId": "v1.health",
@@ -25,22 +170,198 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "const": "ok"
+                                        "success": {
+                                            "type": "boolean"
                                         },
-                                        "version": {
+                                        "message": {
                                             "type": "string",
-                                            "const": "v1"
+                                            "const": "Resource retrieved successfully."
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "const": "ok"
+                                                },
+                                                "version": {
+                                                    "type": "string",
+                                                    "const": "v1"
+                                                }
+                                            },
+                                            "required": [
+                                                "status",
+                                                "version"
+                                            ]
                                         }
                                     },
                                     "required": [
-                                        "status",
-                                        "version"
+                                        "success",
+                                        "message",
+                                        "data"
                                     ]
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/v1/journals": {
+            "get": {
+                "operationId": "v1.journals.index",
+                "tags": [
+                    "Journal"
+                ],
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "default": "title"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Resources retrieved successfully."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/JournalResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "category"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer"
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "last_page",
+                                                "per_page",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/journals/{journal}": {
+            "get": {
+                "operationId": "v1.journals.show",
+                "tags": [
+                    "Journal"
+                ],
+                "parameters": [
+                    {
+                        "name": "journal",
+                        "in": "path",
+                        "required": true,
+                        "description": "The journal ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Resource retrieved successfully."
+                                        },
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/JournalResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "category"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     }
                 }
             }
@@ -69,21 +390,33 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "const": "Login successful."
                                         },
                                         "data": {
-                                            "$ref": "#/components/schemas/UserResource"
-                                        },
-                                        "token": {
-                                            "type": "string"
+                                            "type": "object",
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResource"
+                                                },
+                                                "token": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "user",
+                                                "token"
+                                            ]
                                         }
                                     },
                                     "required": [
+                                        "success",
                                         "message",
-                                        "data",
-                                        "token"
+                                        "data"
                                     ]
                                 }
                             }
@@ -109,13 +442,21 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "const": "Logged out successfully."
+                                        },
+                                        "data": {
+                                            "type": "null"
                                         }
                                     },
                                     "required": [
-                                        "message"
+                                        "success",
+                                        "message",
+                                        "data"
                                     ]
                                 }
                             }
@@ -141,11 +482,20 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Resource retrieved successfully."
+                                        },
                                         "data": {
                                             "$ref": "#/components/schemas/UserResource"
                                         }
                                     },
                                     "required": [
+                                        "success",
+                                        "message",
                                         "data"
                                     ]
                                 }
@@ -182,21 +532,33 @@
                                 "schema": {
                                     "type": "object",
                                     "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "const": "Registration successful."
                                         },
                                         "data": {
-                                            "$ref": "#/components/schemas/UserResource"
-                                        },
-                                        "token": {
-                                            "type": "string"
+                                            "type": "object",
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResource"
+                                                },
+                                                "token": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "user",
+                                                "token"
+                                            ]
                                         }
                                     },
                                     "required": [
+                                        "success",
                                         "message",
-                                        "data",
-                                        "token"
+                                        "data"
                                     ]
                                 }
                             }
@@ -207,10 +569,234 @@
                     }
                 }
             }
+        },
+        "/v1/journals/{journal}/topics": {
+            "get": {
+                "operationId": "v1.journals.topics.index",
+                "tags": [
+                    "Topic"
+                ],
+                "parameters": [
+                    {
+                        "name": "journal",
+                        "in": "path",
+                        "required": true,
+                        "description": "The journal ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Resource retrieved successfully."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TopicResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            }
+        },
+        "/v1/journals/{journal}/topics/{topic}": {
+            "get": {
+                "operationId": "v1.journals.topics.show",
+                "tags": [
+                    "Topic"
+                ],
+                "parameters": [
+                    {
+                        "name": "journal",
+                        "in": "path",
+                        "required": true,
+                        "description": "The journal ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "topic",
+                        "in": "path",
+                        "required": true,
+                        "description": "The topic ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Resource retrieved successfully."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/TopicResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
+            "DisciplineCategoryResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "sort_order": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "slug",
+                    "description",
+                    "is_active",
+                    "sort_order"
+                ],
+                "title": "DisciplineCategoryResource"
+            },
+            "JournalResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "abbreviation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "tagline": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "category": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_new": {
+                        "type": "boolean"
+                    },
+                    "field_chief_editor": {
+                        "type": "null"
+                    },
+                    "sections_count": {
+                        "type": "integer"
+                    },
+                    "articles_count": {
+                        "type": "integer"
+                    },
+                    "views": {
+                        "type": "integer"
+                    },
+                    "citations": {
+                        "type": "integer"
+                    },
+                    "impact_factor": {
+                        "type": "null"
+                    },
+                    "citescore": {
+                        "type": "null"
+                    }
+                },
+                "required": [
+                    "id",
+                    "slug",
+                    "title",
+                    "abbreviation",
+                    "tagline",
+                    "is_new",
+                    "field_chief_editor",
+                    "sections_count",
+                    "articles_count",
+                    "views",
+                    "citations",
+                    "impact_factor",
+                    "citescore"
+                ],
+                "title": "JournalResource"
+            },
             "LoginRequest": {
                 "type": "object",
                 "properties": {
@@ -257,6 +843,48 @@
                 ],
                 "title": "RegisterRequest"
             },
+            "TopicResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "journal_id": {
+                        "type": "integer"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "sort_order": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "journal_id",
+                    "slug",
+                    "title",
+                    "description",
+                    "is_active",
+                    "sort_order"
+                ],
+                "title": "TopicResource"
+            },
             "UserResource": {
                 "type": "object",
                 "properties": {
@@ -299,6 +927,25 @@
             }
         },
         "responses": {
+            "ModelNotFoundException": {
+                "description": "Not found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            },
             "ValidationException": {
                 "description": "Validation error",
                 "content": {

@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>API Export — Emerging Science</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; }
+        .endpoint-card { transition: all 0.15s ease; }
+        .endpoint-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .method-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
+        .method-get { background: #dbeafe; color: #1d4ed8; }
+        .method-post { background: #dcfce7; color: #16a34a; }
+        .method-put { background: #fef3c7; color: #d97706; }
+        .method-delete { background: #fee2e2; color: #dc2626; }
+        .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 24px; border-radius: 8px; color: white; font-weight: 500; z-index: 100; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: #16a34a; }
+        .json-panel { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+        .json-panel.open { max-height: 600px; overflow-y: auto; }
+        pre.json { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.5; overflow-x: auto; margin: 0; font-family: 'SF Mono', 'Fira Code', monospace; }
+        .chevron { transition: transform 0.2s ease; }
+        .chevron.open { transform: rotate(90deg); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-4xl mx-auto px-6 py-10">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">API Endpoint Exporter</h1>
+                <p class="text-sm text-gray-500 mt-1">Select endpoints, tap to preview JSON, and download to share.</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="selectAll()" class="text-sm px-3 py-1.5 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Select All</button>
+                <button onclick="deselectAll()" class="text-sm px-3 py-1.5 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Deselect All</button>
+            </div>
+        </div>
+
+        <div id="loading" class="text-center py-20 text-gray-400">Loading endpoints...</div>
+        <div id="endpoints" class="space-y-2 hidden"></div>
+
+        <div class="mt-8 flex items-center justify-between bg-white border border-gray-200 rounded-xl p-5">
+            <div>
+                <span class="text-sm text-gray-500">Selected:</span>
+                <span id="count" class="ml-2 text-lg font-bold text-indigo-600">0</span>
+                <span class="text-sm text-gray-500">endpoint(s)</span>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="copySelectedJson()" class="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Copy JSON</button>
+                <button onclick="downloadJson()" class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Download JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        let spec = {};
+        let endpoints = [];
+        let minifiedState = {};
+
+        (async () => {
+            const res = await fetch('/docs/api.json');
+            spec = await res.json();
+            endpoints = Object.entries(spec.paths).map(([path, methods]) => ({
+                path,
+                methods: Object.keys(methods).filter(m => ['get','post','put','patch','delete'].includes(m)),
+                summary: Object.values(methods).map(m => m.summary || '').filter(Boolean)[0] || '',
+                tags: Object.values(methods).flatMap(m => m.tags || [])[0] || '',
+                raw: Object.fromEntries(Object.entries(methods).filter(([k]) => ['get','post','put','patch','delete'].includes(k))),
+            }));
+
+            render();
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('endpoints').classList.remove('hidden');
+        })();
+
+        function render() {
+            const container = document.getElementById('endpoints');
+            const grouped = {};
+            endpoints.forEach(ep => {
+                const group = ep.tags || 'Other';
+                if (!grouped[group]) grouped[group] = [];
+                grouped[group].push(ep);
+            });
+
+            container.innerHTML = Object.entries(grouped).map(([tag, eps]) => `
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                    <div class="px-5 py-3 bg-gray-50 border-b border-gray-200">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="group-toggle rounded" data-tag="${tag}" onchange="toggleGroup('${tag}', this.checked)">
+                            <span class="font-semibold text-sm text-gray-700">${tag}</span>
+                            <span class="text-xs text-gray-400">(${eps.length})</span>
+                        </label>
+                    </div>
+                    <div class="divide-y divide-gray-100">
+                        ${eps.map((ep, i) => {
+                            const uid = ep.path.replace(/[^a-zA-Z0-9]/g, '-');
+                            return `
+                            <div>
+                                <div class="endpoint-card flex items-center gap-4 px-5 py-3 cursor-pointer hover:bg-gray-50" onclick="togglePanel('${uid}')">
+                                    <input type="checkbox" class="endpoint-check rounded" data-path="${ep.path}" onclick="event.stopPropagation()" onchange="updateCount()">
+                                    <svg class="chevron w-4 h-4 text-gray-400" id="chev-${uid}">
+                                        <path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+                                    </svg>
+                                    <div class="flex items-center gap-2 min-w-[80px]">
+                                        ${ep.methods.map(m => `<span class="method-badge method-${m}">${m}</span>`).join('')}
+                                    </div>
+                                    <code class="text-sm text-gray-800 font-mono">${ep.path}</code>
+                                    ${ep.summary ? `<span class="text-xs text-gray-400 ml-auto truncate max-w-xs">${ep.summary}</span>` : ''}
+                                </div>
+                                <div class="json-panel" id="panel-${uid}">
+                                    <div class="px-5 py-3 bg-gray-900 flex items-center justify-between">
+                                        <span class="text-xs text-gray-400 font-mono">${ep.path}</span>
+                                        <div class="flex items-center gap-2">
+                                            <button onclick="toggleMinify('${uid}')" class="text-xs px-2.5 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 hover:text-white transition" id="minify-btn-${uid}">Minify</button>
+                                            <button onclick="copyEndpointJson('${uid}')" class="text-xs px-2.5 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 hover:text-white transition">Copy JSON</button>
+                                        </div>
+                                    </div>
+                                    <pre class="json" id="json-${uid}">${syntaxHighlight(JSON.stringify(ep.raw, null, 2))}</pre>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function togglePanel(id) {
+            const panel = document.getElementById('panel-' + id);
+            const chevron = document.getElementById('chev-' + id);
+            panel.classList.toggle('open');
+            chevron.classList.toggle('open');
+        }
+
+        function toggleGroup(tag, checked) {
+            document.querySelectorAll('.endpoint-check[data-path]').forEach(cb => {
+                const ep = endpoints.find(e => e.path === cb.dataset.path);
+                if (ep && ep.tags === tag) cb.checked = checked;
+            });
+            updateCount();
+        }
+
+        function selectAll() {
+            document.querySelectorAll('.endpoint-check').forEach(cb => cb.checked = true);
+            document.querySelectorAll('.group-toggle').forEach(cb => cb.checked = true);
+            updateCount();
+        }
+
+        function deselectAll() {
+            document.querySelectorAll('.endpoint-check, .group-toggle').forEach(cb => cb.checked = false);
+            updateCount();
+        }
+
+        function updateCount() {
+            const count = document.querySelectorAll('.endpoint-check:checked').length;
+            document.getElementById('count').textContent = count;
+        }
+
+        function getFilteredSpec() {
+            const selected = [...document.querySelectorAll('.endpoint-check:checked')].map(cb => cb.dataset.path);
+            if (selected.length === 0) return null;
+
+            const filtered = { ...spec, paths: {} };
+            selected.forEach(path => {
+                if (spec.paths[path]) filtered.paths[path] = spec.paths[path];
+            });
+            return filtered;
+        }
+
+        function downloadJson() {
+            const filtered = getFilteredSpec();
+            if (!filtered) { showToast('Select at least one endpoint'); return; }
+
+            const blob = new Blob([JSON.stringify(filtered, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `api-export-${Object.keys(filtered.paths).length}-endpoints.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('JSON downloaded!');
+        }
+
+        async function copySelectedJson() {
+            const filtered = getFilteredSpec();
+            if (!filtered) { showToast('Select at least one endpoint'); return; }
+
+            await navigator.clipboard.writeText(JSON.stringify(filtered, null, 2));
+            showToast('Copied to clipboard!');
+        }
+
+        async function copyEndpointJson(uid) {
+            const el = document.getElementById('json-' + uid);
+            const text = el.textContent;
+            await navigator.clipboard.writeText(text);
+            showToast('Endpoint JSON copied!');
+        }
+
+        function syntaxHighlight(json) {
+            return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"([^"]+)"(?=\s*:)/g, '<span style="color:#89b4fa">"$1"</span>')
+                .replace(/: "([^"]*)"/g, ': <span style="color:#a6e3a1">"$1"</span>')
+                .replace(/: (true|false)/g, ': <span style="color:#fab387">$1</span>')
+                .replace(/: (\d+)/g, ': <span style="color:#f9e2af">$1</span>')
+                .replace(/: (null)/g, ': <span style="color:#f38ba8">$1</span>');
+        }
+
+        function toggleMinify(uid) {
+            const el = document.getElementById('json-' + uid);
+            const btn = document.getElementById('minify-btn-' + uid);
+            const ep = endpoints.find(e => e.path.replace(/[^a-zA-Z0-9]/g, '-') === uid);
+
+            minifiedState[uid] = !minifiedState[uid];
+
+            if (minifiedState[uid]) {
+                el.textContent = JSON.stringify(ep.raw);
+                btn.textContent = 'Expand';
+            } else {
+                el.innerHTML = syntaxHighlight(JSON.stringify(ep.raw, null, 2));
+                btn.textContent = 'Minify';
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = 'toast success show';
+            setTimeout(() => toast.className = 'toast', 2500);
+        }
+    </script>
+</body>
+</html>
