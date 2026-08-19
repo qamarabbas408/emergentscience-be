@@ -203,16 +203,79 @@
             </div>
         </x-filament::section>
 
+        {{-- Topics --}}
+        <x-filament::section>
+            <x-slot name="heading">Topics</x-slot>
+            <x-slot name="description">Topics are the primary subdivision within a journal. Authors select a topic when submitting a manuscript.</x-slot>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-gray-700 dark:text-gray-300 border-b dark:border-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 font-semibold">Field</th>
+                            <th class="px-4 py-2 font-semibold">Type</th>
+                            <th class="px-4 py-2 font-semibold">Required</th>
+                            <th class="px-4 py-2 font-semibold">Description</th>
+                            <th class="px-4 py-2 font-semibold">Example</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y dark:divide-gray-700">
+                        <tr>
+                            <td class="px-4 py-2 font-mono text-xs">journal_id</td>
+                            <td class="px-4 py-2">foreignId</td>
+                            <td class="px-4 py-2">Yes</td>
+                            <td class="px-4 py-2">The journal this topic belongs to. Each topic must belong to exactly one journal.</td>
+                            <td class="px-4 py-2"><code class="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">1</code></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 font-mono text-xs">slug</td>
+                            <td class="px-4 py-2">string</td>
+                            <td class="px-4 py-2">Yes</td>
+                            <td class="px-4 py-2">URL-safe key. Must be unique within the journal (same slug can exist in different journals).</td>
+                            <td class="px-4 py-2"><code class="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">atmospheric-science</code></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 font-mono text-xs">title</td>
+                            <td class="px-4 py-2">string</td>
+                            <td class="px-4 py-2">Yes</td>
+                            <td class="px-4 py-2">Display name shown to authors during submission.</td>
+                            <td class="px-4 py-2"><code class="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">Atmospheric Science</code></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 font-mono text-xs">description</td>
+                            <td class="px-4 py-2">text</td>
+                            <td class="px-4 py-2">No</td>
+                            <td class="px-4 py-2">What this topic covers. Helps authors decide if their work fits.</td>
+                            <td class="px-4 py-2">A short paragraph about the topic scope.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 font-mono text-xs">is_active</td>
+                            <td class="px-4 py-2">boolean</td>
+                            <td class="px-4 py-2">No</td>
+                            <td class="px-4 py-2">When off, the topic is hidden from the public API and not accepting submissions.</td>
+                            <td class="px-4 py-2"><code class="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">true</code></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 font-mono text-xs">sort_order</td>
+                            <td class="px-4 py-2">integer</td>
+                            <td class="px-4 py-2">No</td>
+                            <td class="px-4 py-2">Display order within the journal. Lower numbers appear first.</td>
+                            <td class="px-4 py-2"><code class="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">1</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </x-filament::section>
+
         {{-- Relationships --}}
         <x-filament::section>
             <x-slot name="heading">Relationships</x-slot>
             <x-slot name="description">How journals connect to other entities in the system.</x-slot>
 
             <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
-                <p><strong>sections</strong> — Journals contain sections. Each section groups manuscripts. (Coming soon)</p>
-                <p><strong>topics</strong> — Sections contain topics. Finest-grained categorisation. (Coming soon)</p>
+                <p><strong>topics</strong> — Journals contain topics. Topics are the primary subdivision for categorising manuscripts. Authors select a topic during submission. (Implemented)</p>
                 <p><strong>special_issues</strong> — Journals can run special issues with own scope, deadlines, guest editors. (Coming soon)</p>
-                <p><strong>manuscripts</strong> — Belong to a journal via section. Journal's <code>doi_prefix</code> allocates DOIs on acceptance. (Coming soon)</p>
+                <p><strong>manuscripts</strong> — Belong to a journal via topic. Journal's <code>doi_prefix</code> allocates DOIs on acceptance. (Coming soon)</p>
                 <p><strong>apc_invoices</strong> — Generated from journal APC fields. Permissioned away from editorial views per COPE. (Coming soon)</p>
             </div>
         </x-filament::section>
