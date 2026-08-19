@@ -57,7 +57,7 @@ composer test        # runs phpunit
 ## Reference
 
 - Full product research/requirements: `requirements.md`
-- Admin login (local dev): `admin@emergingscience.dev` / `password`
+- Admin login (local dev): `admin@example.com` / `admin`
 
 # Learning Goals
 
