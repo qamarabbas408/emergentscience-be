@@ -18,6 +18,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Accounting and Auditing',
+                    'tagline' => 'Open access research in accounting, auditing, and corporate governance',
                     'slug' => 'accounting',
                     'abbreviation' => 'Account. Audit.',
                     'doi_prefix' => '10.3390/accountaudit',
@@ -39,6 +40,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Acoustics',
+                    'tagline' => 'Research on sound, vibration, and acoustic engineering',
                     'slug' => 'acoustics',
                     'abbreviation' => 'Acoustics',
                     'doi_prefix' => '10.3390/acoustics',
@@ -60,6 +62,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Acta Microbiologica Hellenica',
+                    'tagline' => 'Microbiology and infectious disease research',
                     'slug' => 'acta-microbiologica-hellenica',
                     'abbreviation' => 'Acta Microbiol. Hell.',
                     'doi_prefix' => '10.3390/amh',
@@ -80,6 +83,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Actuators',
+                    'tagline' => 'Smart actuators, mechatronics, and robotic systems',
                     'slug' => 'actuators',
                     'abbreviation' => 'Actuators',
                     'doi_prefix' => '10.3390/actuators',
@@ -101,6 +105,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Addiction & Prevention',
+                    'tagline' => 'Understanding and preventing addiction through research',
                     'slug' => 'addiction-prevention',
                     'abbreviation' => 'Addict. Prev.',
                     'doi_prefix' => '10.3390/addictprev',
@@ -122,6 +127,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Adhesives',
+                    'tagline' => 'Advances in adhesive science and bonding technology',
                     'slug' => 'adhesives',
                     'abbreviation' => 'Adhesives',
                     'doi_prefix' => '10.3390/adhesives',
@@ -143,6 +149,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Administrative Sciences',
+                    'tagline' => 'Research in management, governance, and organizational science',
                     'slug' => 'administrative-sciences',
                     'abbreviation' => 'Admin. Sci.',
                     'doi_prefix' => '10.3390/admsci',
@@ -164,6 +171,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Adolescents',
+                    'tagline' => 'Adolescent health, development, and wellbeing',
                     'slug' => 'adolescents',
                     'abbreviation' => 'Adolescents',
                     'doi_prefix' => '10.3390/adolescents',
@@ -185,6 +193,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Advances in Respiratory Medicine',
+                    'tagline' => 'Advancing pulmonary and respiratory care',
                     'slug' => 'advances-respiratory-medicine',
                     'abbreviation' => 'Adv. Respir. Med.',
                     'doi_prefix' => '10.3390/arm',
@@ -206,6 +215,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Aerobiology',
+                    'tagline' => 'Airborne biological particles and allergen research',
                     'slug' => 'aerobiology',
                     'abbreviation' => 'Aerobiology',
                     'doi_prefix' => '10.3390/aerobiology',
@@ -227,6 +237,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Aeronautics',
+                    'tagline' => 'Flight dynamics, propulsion, and avionics research',
                     'slug' => 'aeronautics',
                     'abbreviation' => 'Aeronautics',
                     'doi_prefix' => '10.3390/aeronautics',
@@ -248,6 +259,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Aerospace',
+                    'tagline' => 'Spaceflight, satellites, and orbital mechanics',
                     'slug' => 'aerospace',
                     'abbreviation' => 'Aerospace',
                     'doi_prefix' => '10.3390/aerospace',
@@ -269,6 +281,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Agriculture',
+                    'tagline' => 'Crop production, farming, and agricultural economics',
                     'slug' => 'agriculture',
                     'abbreviation' => 'Agriculture',
                     'doi_prefix' => '10.3390/agriculture',
@@ -290,6 +303,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'AgriEngineering',
+                    'tagline' => 'Agricultural machinery and precision farming tech',
                     'slug' => 'agriengineering',
                     'abbreviation' => 'AgriEng.',
                     'doi_prefix' => '10.3390/agriengineering',
@@ -310,6 +324,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Agrochemicals',
+                    'tagline' => 'Fertilizers, pesticides, and agrochemical research',
                     'slug' => 'agrochemicals',
                     'abbreviation' => 'Agrochemicals',
                     'doi_prefix' => '10.3390/agrochemicals',
@@ -331,6 +346,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'Agronomy',
+                    'tagline' => 'Crop ecology, soil fertility, and field management',
                     'slug' => 'agronomy',
                     'abbreviation' => 'Agronomy',
                     'doi_prefix' => '10.3390/agronomy',
@@ -352,6 +368,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'AI',
+                    'tagline' => 'Machine learning, neural networks, and deep learning',
                     'slug' => 'ai',
                     'abbreviation' => 'AI',
                     'doi_prefix' => '10.3390/ai',
@@ -373,6 +390,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'AI and Precision Agriculture',
+                    'tagline' => 'AI-driven smart farming and crop intelligence',
                     'slug' => 'ai-precision-agriculture',
                     'abbreviation' => 'AI Precis. Agric.',
                     'doi_prefix' => '10.3390/aiprecagric',
@@ -393,6 +411,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'AI Chemistry',
+                    'tagline' => 'AI for molecular prediction and drug discovery',
                     'slug' => 'ai-chemistry',
                     'abbreviation' => 'AI Chem.',
                     'doi_prefix' => '10.3390/aichemistry',
@@ -413,6 +432,7 @@ class JournalSeeder extends Seeder
             [
                 'journal' => [
                     'title' => 'AI for Engineering',
+                    'tagline' => 'Generative design, predictive maintenance, and physics-informed AI',
                     'slug' => 'ai-engineering',
                     'abbreviation' => 'AI Eng.',
                     'doi_prefix' => '10.3390/aiengineering',
