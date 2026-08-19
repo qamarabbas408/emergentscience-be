@@ -40,6 +40,12 @@ class JournalResource extends Resource
                         Forms\Components\TextInput::make('doi_prefix')
                             ->required()
                             ->helperText('e.g. 10.3390'),
+                        Forms\Components\Select::make('discipline_category_id')
+                            ->relationship('disciplineCategory', 'title')
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->helperText('Broad subject area for filtering (Science, Health, etc.)'),
                     ]),
                 Forms\Components\Section::make('Identifiers')
                     ->columns(2)
