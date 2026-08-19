@@ -12,7 +12,7 @@ class JournalController extends Controller
     public function index(): JsonResponse
     {
         $journals = Journal::query()
-            ->with('disciplineCategory')
+            ->with('disciplineCategories')
             ->where('is_active', true)
             ->orderBy('title')
             ->get();
@@ -26,7 +26,7 @@ class JournalController extends Controller
     {
         abort_if(! $journal->is_active, 404);
 
-        $journal->load('disciplineCategory');
+        $journal->load('disciplineCategories');
 
         return new JournalResource($journal);
     }

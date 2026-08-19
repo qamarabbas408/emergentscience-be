@@ -40,21 +40,18 @@ class JournalResource extends Resource
                         Forms\Components\TextInput::make('doi_prefix')
                             ->required()
                             ->helperText('e.g. 10.3390'),
-                        Forms\Components\Select::make('discipline_category_id')
-                            ->relationship('disciplineCategory', 'title')
+                        Forms\Components\Select::make('disciplineCategories')
+                            ->relationship('disciplineCategories', 'name')
+                            ->multiple()
                             ->searchable()
                             ->preload()
-                            ->nullable()
-                            ->helperText('Broad subject area for filtering (Science, Health, etc.)'),
+                            ->helperText('Select one or more discipline categories for filtering (Science, Health, etc.)'),
                     ]),
                 Forms\Components\Section::make('Identifiers')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('issn')->maxLength(255),
                         Forms\Components\TextInput::make('eissn')->maxLength(255),
-                        Forms\Components\TextInput::make('discipline')
-                            ->maxLength(255)
-                            ->columnSpan(2),
                     ]),
                 Forms\Components\Section::make('Policy')
                     ->columns(2)
@@ -93,8 +90,10 @@ class JournalResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('discipline')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('disciplineCategory.name')
+                    ->label('Category')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('doi_prefix')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')

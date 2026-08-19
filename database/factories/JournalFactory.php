@@ -24,7 +24,6 @@ class JournalFactory extends Factory
             'issn' => $this->faker->numerify('####-####') . ' ' . $this->faker->numerify('####-####'),
             'eissn' => $this->faker->numerify('####-####') . ' ' . $this->faker->numerify('####-####'),
             'doi_prefix' => '10.33' . $this->faker->numberBetween(100, 999),
-            'discipline_category_id' => \App\Models\DisciplineCategory::factory(),
             'discipline' => $this->faker->randomElement(['Earth Science', 'Life Sciences', 'Engineering', 'Medicine', 'Social Sciences', 'Humanities']),
             'license' => 'CC-BY 4.0',
             'scope' => $this->faker->sentence(18),

@@ -59,9 +59,11 @@ class DisciplineCategoryApiTest extends TestCase
     public function test_can_list_journals_for_a_category(): void
     {
         $category = DisciplineCategory::factory()->create(['is_active' => true]);
-        Journal::factory()->create(['discipline_category_id' => $category->id, 'is_active' => true, 'title' => 'Journal A']);
-        Journal::factory()->create(['discipline_category_id' => $category->id, 'is_active' => false, 'title' => 'Journal B']);
-        Journal::factory()->create(['is_active' => true]); // different category
+        $journalA = Journal::factory()->create(['is_active' => true, 'title' => 'Journal A']);
+        $journalA->disciplineCategories()->attach($category);
+        $journalB = Journal::factory()->create(['is_active' => false, 'title' => 'Journal B']);
+        $journalB->disciplineCategories()->attach($category);
+        Journal::factory()->create(['is_active' => true]); // no category
 
         $response = $this->getJson("/api/v1/discipline-categories/{$category->id}/journals");
 
