@@ -13,13 +13,16 @@ class DisciplineCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Science', 'slug' => 'science', 'sort_order' => 1],
-            ['name' => 'Health', 'slug' => 'health', 'sort_order' => 2],
-            ['name' => 'Engineering', 'slug' => 'engineering', 'sort_order' => 3],
-            ['name' => 'Social Sciences', 'slug' => 'social-sciences', 'sort_order' => 4],
-            ['name' => 'Humanities', 'slug' => 'humanities', 'sort_order' => 5],
-            ['name' => 'Economics & Business', 'slug' => 'economics-business', 'sort_order' => 6],
-            ['name' => 'Data & Information', 'slug' => 'data-information', 'sort_order' => 7],
+            ['name' => 'Business & Economics', 'slug' => 'business-economics', 'sort_order' => 1],
+            ['name' => 'Physics & Engineering', 'slug' => 'physics-engineering', 'sort_order' => 2],
+            ['name' => 'Medicine & Microbiology', 'slug' => 'medicine-microbiology', 'sort_order' => 3],
+            ['name' => 'Engineering & Technology', 'slug' => 'engineering-technology', 'sort_order' => 4],
+            ['name' => 'Psychology & Public Health', 'slug' => 'psychology-public-health', 'sort_order' => 5],
+            ['name' => 'Materials Science & Chemistry', 'slug' => 'materials-science-chemistry', 'sort_order' => 6],
+            ['name' => 'Business & Management', 'slug' => 'business-management', 'sort_order' => 7],
+            ['name' => 'Social & Behavioral Sciences', 'slug' => 'social-behavioral-sciences', 'sort_order' => 8],
+            ['name' => 'Medicine & Healthcare', 'slug' => 'medicine-healthcare', 'sort_order' => 9],
+            ['name' => 'Environmental Science & Biology', 'slug' => 'environmental-science-biology', 'sort_order' => 10],
         ];
 
         foreach ($categories as $category) {
