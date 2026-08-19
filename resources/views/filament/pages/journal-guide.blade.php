@@ -53,6 +53,13 @@
                             <td class="px-4 py-2">DOI registrant prefix assigned by Crossref. Used to auto-allocate DOIs to manuscripts.</td>
                             <td class="px-4 py-2"><code class="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">10.3390</code></td>
                         </tr>
+                        <tr>
+                            <td class="px-4 py-2 font-mono text-xs">discipline_category_id</td>
+                            <td class="px-4 py-2">foreignId</td>
+                            <td class="px-4 py-2">No</td>
+                            <td class="px-4 py-2">The discipline category this journal belongs to (e.g. Science, Health, Engineering). Used for filtering on the journals listing page.</td>
+                            <td class="px-4 py-2"><code class="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">1</code></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -273,6 +280,7 @@
             <x-slot name="description">How journals connect to other entities in the system.</x-slot>
 
             <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                <p><strong>discipline_category</strong> — Journals belong to a discipline category (Science, Health, Engineering, etc.). Categories are used for filtering on the journals listing page. (Implemented)</p>
                 <p><strong>topics</strong> — Journals contain topics. Topics are the primary subdivision for categorising manuscripts. Authors select a topic during submission. (Implemented)</p>
                 <p><strong>special_issues</strong> — Journals can run special issues with own scope, deadlines, guest editors. (Coming soon)</p>
                 <p><strong>manuscripts</strong> — Belong to a journal via topic. Journal's <code>doi_prefix</code> allocates DOIs on acceptance. (Coming soon)</p>

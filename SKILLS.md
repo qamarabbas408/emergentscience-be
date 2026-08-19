@@ -30,7 +30,7 @@ composer test        # runs phpunit
 - Backend only; no Blade UI for features — the React app is the public UI.
 - Add new API endpoints under the appropriate `routes/api/v{n}.php` + `Api\V{n}` controller namespace.
 - Keep billing/APC data permissioned away from editorial-decision views (COPE requirement — see `requirements.md`).
-- Core domain entities: journals, topics, special_issues, manuscripts, reviews, decisions, conflicts_of_interest, apc_invoices, appeals, production_assets. Hierarchy: Journal → Topics → Manuscripts (Frontiers-style, no sections).
+- Core domain entities: discipline_categories, journals, topics, special_issues, manuscripts, reviews, decisions, conflicts_of_interest, apc_invoices, appeals, production_assets. Hierarchy: Discipline Category → Journal → Topics → Manuscripts (Frontiers-style, no sections).
 
 ## Laravel API Standards
 

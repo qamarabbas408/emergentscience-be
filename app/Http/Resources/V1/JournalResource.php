@@ -17,6 +17,8 @@ class JournalResource extends JsonResource
             'issn' => $this->issn,
             'eissn' => $this->eissn,
             'doi_prefix' => $this->doi_prefix,
+            'discipline_category_id' => $this->discipline_category_id,
+            'discipline_category_name' => $this->whenLoaded('disciplineCategory', fn () => $this->disciplineCategory->name),
             'discipline' => $this->discipline,
             'license' => $this->license,
             'scope' => $this->scope,

@@ -7,9 +7,14 @@ use App\Http\Controllers\Api\V1\Auth\RegisterController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\JournalController;
 use App\Http\Controllers\Api\V1\TopicController;
+use App\Http\Controllers\Api\V1\DisciplineCategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
+
+Route::get('/discipline-categories', [DisciplineCategoryController::class, 'index'])->name('discipline-categories.index');
+Route::get('/discipline-categories/{category}', [DisciplineCategoryController::class, 'show'])->name('discipline-categories.show');
+Route::get('/discipline-categories/{category}/journals', [DisciplineCategoryController::class, 'journals'])->name('discipline-categories.journals');
 
 Route::get('/journals', [JournalController::class, 'index'])->name('journals.index');
 Route::get('/journals/{journal}', [JournalController::class, 'show'])->name('journals.show');
