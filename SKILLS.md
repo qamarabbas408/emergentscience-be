@@ -59,6 +59,15 @@ composer test        # runs phpunit
 - Full product research/requirements: `requirements.md`
 - Admin login (local dev): `admin@example.com` / `admin`
 
+## Minimize token usage to preserve context
+
+- Keep responses terse and direct.
+- Read files in parallel batches rather than one at a time.
+- Read only the specific files/lines needed instead of whole files.
+- Prefer targeted `grep`/`rg` for spot-checks over full reads.
+- Avoid re-reading files already seen this session.
+- When output is long, use offsets to read only the changed regions.
+
 # Learning Goals
 
 - Get productive in Laravel 12 (current version).
