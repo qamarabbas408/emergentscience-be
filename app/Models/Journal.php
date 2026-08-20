@@ -23,6 +23,11 @@ class Journal extends Model
         return $this->hasMany(Topic::class);
     }
 
+    public function articles(): HasMany
+    {
+        return $this->hasMany(Article::class);
+    }
+
     protected function casts(): array
     {
         return [
