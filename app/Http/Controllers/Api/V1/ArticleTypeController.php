@@ -14,7 +14,7 @@ class ArticleTypeController extends Controller
     {
         $types = ArticleType::where('is_active', true)
             ->orderBy('sort_order')
-            ->get(['slug', 'name']);
+            ->get(['slug', 'name', 'max_word_count', 'max_summary_words', 'max_figures_tables']);
 
         return $this->success($types);
     }
