@@ -16,12 +16,12 @@ class Article extends Model
 
     protected $fillable = [
         'journal_id',
+        'article_type_id',
         'title',
         'abstract',
         'keywords',
         'doi',
         'slug',
-        'article_type',
         'status',
         'language',
         'volume',
@@ -52,6 +52,11 @@ class Article extends Model
     public function journal(): BelongsTo
     {
         return $this->belongsTo(Journal::class);
+    }
+
+    public function articleType(): BelongsTo
+    {
+        return $this->belongsTo(ArticleType::class);
     }
 
     public function topics(): BelongsToMany

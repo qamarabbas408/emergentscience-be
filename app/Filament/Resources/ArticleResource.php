@@ -40,19 +40,10 @@ class ArticleResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required(),
-                        Forms\Components\Select::make('article_type')
-                            ->options([
-                                'research-article' => 'Research Article',
-                                'review' => 'Review',
-                                'systematic-review' => 'Systematic Review',
-                                'meta-analysis' => 'Meta-Analysis',
-                                'brief-report' => 'Brief Report',
-                                'case-report' => 'Case Report',
-                                'editorial' => 'Editorial',
-                                'letter' => 'Letter',
-                                'correction' => 'Correction',
-                                'protocol' => 'Protocol',
-                            ])
+                        Forms\Components\Select::make('article_type_id')
+                            ->relationship('articleType', 'name')
+                            ->searchable()
+                            ->preload()
                             ->required(),
                         Forms\Components\Select::make('status')
                             ->options([
@@ -135,12 +126,13 @@ class ArticleResource extends Resource
                     ->label('Journal')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('article_type')
+                Tables\Columns\TextColumn::make('articleType.name')
+                    ->label('Type')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'research-article' => 'info',
-                        'review' => 'success',
-                        'editorial' => 'warning',
+                        'Research Article' => 'info',
+                        'Review' => 'success',
+                        'Editorial' => 'warning',
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('status')
@@ -167,12 +159,9 @@ class ArticleResource extends Resource
                 Tables\Filters\SelectFilter::make('journal_id')
                     ->relationship('journal', 'title')
                     ->label('Journal'),
-                Tables\Filters\SelectFilter::make('article_type')
-                    ->options([
-                        'research-article' => 'Research Article',
-                        'review' => 'Review',
-                        'editorial' => 'Editorial',
-                    ]),
+                Tables\Filters\SelectFilter::make('article_type_id')
+                    ->relationship('articleType', 'name')
+                    ->label('Type'),
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
                         'draft' => 'Draft',
