@@ -18,6 +18,14 @@ class JournalResource extends JsonResource
             'category' => $this->whenLoaded('disciplineCategories', function () {
                 return $this->disciplineCategories->first()?->name;
             }),
+            'topics' => $this->whenLoaded('topics', function () {
+                return $this->topics->map(fn ($topic) => [
+                    'id' => $topic->id,
+                    'slug' => $topic->slug,
+                    'title' => $topic->title,
+                    'description' => $topic->description,
+                ]);
+            }),
             'is_new' => false,
             'field_chief_editor' => null,
             'sections_count' => 0,

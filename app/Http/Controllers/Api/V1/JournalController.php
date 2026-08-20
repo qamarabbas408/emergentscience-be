@@ -18,6 +18,11 @@ class JournalController extends Controller
             ->with('disciplineCategories')
             ->where('is_active', true);
 
+        $include = array_filter(explode(',', $request->input('include', '')));
+        if (in_array('topics', $include)) {
+            $query->with('topics');
+        }
+
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
@@ -59,11 +64,16 @@ class JournalController extends Controller
         );
     }
 
-    public function show(Journal $journal): JsonResponse
+    public function show(Journal $journal, Request $request): JsonResponse
     {
         abort_if(! $journal->is_active, 404);
 
-        $journal->load('disciplineCategories');
+        $relations = ['disciplineCategories'];
+        $include = array_filter(explode(',', $request->input('include', '')));
+        if (in_array('topics', $include)) {
+            $relations[] = 'topics';
+        }
+        $journal->load($relations);
 
         return $this->success(new JournalResource($journal));
     }
