@@ -64,7 +64,6 @@ class ArticleTypeResource extends Resource
                         Forms\Components\Textarea::make('file_requirements')
                             ->rows(12)
                             ->columnSpanFull()
-                            ->dehydrateStateUsing(fn ($state) => is_string($state) ? json_decode($state, true) : $state)
                             ->afterStateHydrated(function ($component, $state) {
                                 if (is_array($state)) {
                                     $component->state(json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
