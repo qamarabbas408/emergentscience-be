@@ -28,7 +28,7 @@ class ArticleTypeResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('slug')
                             ->required()
-                            ->unique(ArticleType::class, 'slug', fn ($record) => $record?->id)
+                            ->unique(ArticleType::class, 'slug', ignoreRecord: true)
                             ->maxLength(255)
                             ->helperText('e.g. ORIGINAL_RESEARCH'),
                         Forms\Components\TextInput::make('name')
@@ -61,56 +61,102 @@ class ArticleTypeResource extends Resource
                 Forms\Components\Section::make('File Requirements')
                     ->description('Configure which file types are allowed for this article type.')
                     ->schema([
-                        Forms\Components\Repeater::make('file_requirements')
+                        Forms\Components\Section::make('Manuscript')
+                            ->icon('heroicon-o-document-text')
+                            ->columns(3)
                             ->schema([
-                                Forms\Components\TextInput::make('key')
-                                    ->label('Section')
-                                    ->required()
-                                    ->readOnly()
-                                    ->columnSpan(2),
-                                Forms\Components\Toggle::make('enabled')
+                                Forms\Components\Toggle::make('manuscript_enabled')
                                     ->label('Enabled')
-                                    ->default(true),
-                                Forms\Components\TextInput::make('max_size_mb')
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['manuscript']['enabled'] ?? false);
+                                        }
+                                    }),
+                                Forms\Components\TextInput::make('manuscript_max_size_mb')
                                     ->label('Max Size (MB)')
                                     ->numeric()
                                     ->default(50)
-                                    ->columnSpan(2),
-                                Forms\Components\TagsInput::make('extensions')
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['manuscript']['max_size_mb'] ?? 50);
+                                        }
+                                    }),
+                                Forms\Components\TagsInput::make('manuscript_extensions')
                                     ->label('Allowed Extensions')
                                     ->placeholder('.pdf, .docx')
-                                    ->columnSpan(3),
-                            ])
-                            ->columns(4)
-                            ->defaultItems(0)
-                            ->addActionLabel('Add File Section')
-                            ->reorderable(false)
-                            ->afterStateHydrated(function ($component, $state) {
-                                if (is_string($state)) {
-                                    $state = json_decode($state, true);
-                                }
-                                if (is_array($state) && array_is_list($state) === false) {
-                                    $items = [];
-                                    foreach ($state as $key => $value) {
-                                        $items[] = array_merge(['key' => $key], (array) $value);
-                                    }
-                                    $component->state($items);
-                                }
-                            })
-                            ->dehydrateStateUsing(function (array $state): array {
-                                $result = [];
-                                foreach ($state as $item) {
-                                    $key = $item['key'] ?? null;
-                                    if ($key) {
-                                        $result[$key] = [
-                                            'enabled' => (bool) ($item['enabled'] ?? false),
-                                            'max_size_mb' => (int) ($item['max_size_mb'] ?? 50),
-                                            'extensions' => $item['extensions'] ?? [],
-                                        ];
-                                    }
-                                }
-                                return $result;
-                            }),
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['manuscript']['extensions'] ?? []);
+                                        }
+                                    }),
+                            ]),
+                        Forms\Components\Section::make('Figures')
+                            ->icon('heroicon-o-photo')
+                            ->columns(3)
+                            ->schema([
+                                Forms\Components\Toggle::make('figures_enabled')
+                                    ->label('Enabled')
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['figures']['enabled'] ?? false);
+                                        }
+                                    }),
+                                Forms\Components\TextInput::make('figures_max_size_mb')
+                                    ->label('Max Size (MB)')
+                                    ->numeric()
+                                    ->default(20)
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['figures']['max_size_mb'] ?? 20);
+                                        }
+                                    }),
+                                Forms\Components\TagsInput::make('figures_extensions')
+                                    ->label('Allowed Extensions')
+                                    ->placeholder('.jpg, .png')
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['figures']['extensions'] ?? []);
+                                        }
+                                    }),
+                            ]),
+                        Forms\Components\Section::make('Supplementary')
+                            ->icon('heroicon-o-paper-clip')
+                            ->columns(3)
+                            ->schema([
+                                Forms\Components\Toggle::make('supplementary_enabled')
+                                    ->label('Enabled')
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['supplementary']['enabled'] ?? false);
+                                        }
+                                    }),
+                                Forms\Components\TextInput::make('supplementary_max_size_mb')
+                                    ->label('Max Size (MB)')
+                                    ->numeric()
+                                    ->default(200)
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['supplementary']['max_size_mb'] ?? 200);
+                                        }
+                                    }),
+                                Forms\Components\TagsInput::make('supplementary_extensions')
+                                    ->label('Allowed Extensions')
+                                    ->placeholder('.pdf, .xlsx')
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['supplementary']['extensions'] ?? []);
+                                        }
+                                    }),
+                            ]),
                     ]),
             ]);
     }

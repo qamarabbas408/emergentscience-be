@@ -1,115 +1,39 @@
 # SKILLS.md
 
-Project knowledge and conventions for working in this repository.
-
 ## Project
+Open-access journal platform. Laravel 12 API + Filament admin. React FE (separate repo). MySQL 9.
 
-Emerging Science — an open-access journal submission, peer-review, and production platform. Backend is Laravel (APIs only); the public UI is a separate React app maintained by the FE developer; the internal admin panel is Filament.
-
-## Architecture
-
-- **Laravel 12** serves as a pure API backend (`/api`).
-- **API versioning**: URI-prefix versioning. Route groups live in `routes/api/v{n}.php`, included from `routes/api.php`. Controllers live in `app/Http/Controllers/Api/V{n}/`.
-- **API docs**: Scramble auto-generates OpenAPI docs from code, served at `/docs/api`. Regenerate export with `php artisan scramble:export`.
-- **Admin panel**: Filament PHP at `/admin`, panel provider at `app/Providers/Filament/AdminPanelProvider.php`.
-- **Static landing page**: `/` renders `resources/views/landing.blade.php` (placeholder until the React app takes over).
-- **Health check**: Laravel's built-in `/up` + `api/v1/health`.
-
-## Commands
-
-```bash
-php artisan serve
-php artisan route:list
-php artisan scramble:export
-php artisan make:filament-resource <Model>
-composer test        # runs phpunit
+## Key Commands
+```
+php artisan serve | route:list | scramble:export | make:filament-resource <Model>
+composer test  # phpunit
 ```
 
-## Conventions
-
-- Backend only; no Blade UI for features — the React app is the public UI.
-- Add new API endpoints under the appropriate `routes/api/v{n}.php` + `Api\V{n}` controller namespace.
-- Keep billing/APC data permissioned away from editorial-decision views (COPE requirement — see `requirements.md`).
-- Core domain entities: discipline_categories, journals, topics, special_issues, manuscripts, reviews, decisions, conflicts_of_interest, apc_invoices, appeals, production_assets. Hierarchy: Discipline Category → Journal → Topics → Manuscripts (Frontiers-style, no sections).
-
-## Laravel API Standards
-
-- **API-first**: the `/api` layer is consumed by the React public UI and Filament admin panel; business logic lives in services/repositories, not controllers.
-- **Versioning**: URI-prefix versioning via `routes/api/v{n}.php` + `Api\V{n}` controller namespaces — never break an existing versioned contract.
-- **Resources, not arrays**: return `JsonResource`/`ResourceCollection` instances (e.g. `V1\UserResource`); never hand-roll response arrays or sprinkle `toArray` over models.
-- **Validation via FormRequest**: use dedicated `FormRequest` classes for request validation + authorization; keep controllers thin.
-- **Response envelope**: every API response MUST use a consistent envelope format. Use the `ApiResponse` trait in controllers.
-
-  **Success (single resource):**
-  ```json
-  {
-    "success": true,
-    "message": "Resource retrieved successfully.",
-    "data": { "id": 1, "title": "..." }
-  }
-  ```
-
-  **Success (collection with pagination):**
-  ```json
-  {
-    "success": true,
-    "message": "Resources retrieved successfully.",
-    "data": [ ... ],
-    "meta": { "current_page": 1, "last_page": 4, "per_page": 12, "total": 43 }
-  }
-  ```
-
-  **Failure (validation):**
-  ```json
-  {
-    "success": false,
-    "message": "The given data was invalid.",
-    "errors": { "email": ["The email field is required."] }
-  }
-  ```
-
-  **Failure (general):**
-  ```json
-  {
-    "success": false,
-    "message": "Resource not found.",
-    "errors": null
-  }
-  ```
-
-- **Error contracts**: use `ApiResponse` trait so all errors follow the envelope with consistent HTTP status mapping.
-- **Status codes**: 200 (read/update), 201 (created with `Location` header), 204 (delete), 401 (unauthenticated), 403 (forbidden), 404 (not found), 422 (validation).
-- **HTTP semantics**: `GET` is safe & idempotent; `POST` creates; `PUT` full replace; `PATCH` partial. Return `204 No Content` for successful delete.
-- **Security**: Sanctum bearer-token auth on protected routes; tokens hashed in DB with hashed random 40-char strings; no tokens in responses/logs; password hashing via `bcrypt`.
-- **Rate limiting**: version auth routes (`throttle:5,1` login/`throttle:10,1` register, etc.); extend `throttles` for sensitive writes.
-- **Paginated responses**: `ResourceCollection` with `AbstractResource::pagination()`; clients may pass `?page=N` only.
+## API
+- Routes: `routes/api/v{n}.php`, controllers: `app/Http/Controllers/Api/V{n}/`
+- Resources: `app/Http/Resources/V{n}/`. Always use `JsonResource`, never hand-roll arrays.
+- Response envelope: `ApiResponse` trait. Success: `{success, message, data, meta?}`. Failure: `{success: false, message, errors}`.
+- Status: 200/201/204/401/403/404/422.
+- Auth: Sanctum. Rate limit: throttle middleware on routes.
+- Docs: Scramble at `/docs/api`. Export at `/docs/api/export`.
 
 ## Database
+- MySQL 9, utf8mb4_unicode_ci. Migrations = source of truth.
+- snake_case columns, explicit FK indices, ON DELETE RESTRICT default.
+- Soft deletes on review/decision entities. UUID PKs on journal entities; int PKs on users/roles.
+- Hierarchy: Discipline Category → Journal → Topics → Articles.
 
-- **MySQL 9** (utf8mb4, `utf8mb4_unicode_ci`). Migrations are the source of truth — no raw SQL in app code.
-- **Eloquent relationships** via `hasManyThrough`/`hasMorphMany`/scoped relations; avoid N+1 (eager-load with `withCount`/constraints or `@covers` queries in tests).
-- **Normalization**: keep transactional entities to 3NF; denormalize only behind CQRS for reads. Journals→Sections, Manuscripts→Reviews, Appeals, ProductionAssets, ApcInvoices — use FK constraints (no `SET NULL` unless strictly required; cascade soft-delete via `CascadeSoftDeletes` trait).
-- **Soft deletes** (`SoftDeletes` trait) on manuscripts/reviews/decisions/appeals/apc invoices — audit trail over hard deletes.
-- **UUID keys**: PKs are `uuid` on all journal entities (manuscripts/reviews/etc.) for safe cross-instance merges; `users`/`roles` stay unsigned-int/Bigint for Laravel/Sanctum simplicity.
-- **Conventions**: snake_case columns, explicit FK indices, `ON DELETE RESTRICT` defaults, avoid reserved words (`status`, `order`, `type`) — alias them.
+## Filament
+- Panel: `/admin`, provider: `app/Providers/Filament/AdminPanelProvider.php`.
+- Resources in `app/Filament/Resources/`. Pages in `app/Filament/Pages/`.
 
-## Reference
+## Conventions
+- No Blade UI for features. Backend API only.
+- COPE: billing/APC fields hidden from editorial views (`apc_amount`, `apc_currency` not in public API).
+- Validate via FormRequest. Controllers thin.
 
-- Full product research/requirements: `requirements.md`
-- Admin login (local dev): `admin@example.com` / `admin`
+## Troubleshooting
+- **Filament `getOriginal() on int`**: `->unique(Model, 'slug', fn($r) => $r?->id)` → use `->unique(Model, 'slug', ignoreRecord: true)`. Callback returning int breaks Filament v3 validation. Check ALL unique rules in all resources.
 
-## Minimize token usage to preserve context
-
-- Keep responses terse and direct.
-- Read files in parallel batches rather than one at a time.
-- Read only the specific files/lines needed instead of whole files.
-- Prefer targeted `grep`/`rg` for spot-checks over full reads.
-- Avoid re-reading files already seen this session.
-- When output is long, use offsets to read only the changed regions.
-
-# Learning Goals
-
-- Get productive in Laravel 12 (current version).
-- Internalize the API standards.
-- Internalize the database conventions.
-- Apply them to this codebase without drifting.
+## Token Rules
+- Parallel file reads. Grep before reading. Use offsets. Never re-read seen files. Terse output.

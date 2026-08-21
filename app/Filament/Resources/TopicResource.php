@@ -39,7 +39,7 @@ class TopicResource extends Resource
                             ->afterStateUpdated(fn ($state, $set) => $set('slug', \Illuminate\Support\Str::slug($state))),
                         Forms\Components\TextInput::make('slug')
                             ->required()
-                            ->unique(Topic::class, 'slug', fn ($record) => $record?->id)
+                            ->unique(Topic::class, 'slug', ignoreRecord: true)
                             ->maxLength(255)
                             ->helperText('URL-safe key, auto-generated from title.'),
                         Forms\Components\Toggle::make('is_active')

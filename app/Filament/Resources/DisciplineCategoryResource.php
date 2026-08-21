@@ -34,7 +34,7 @@ class DisciplineCategoryResource extends Resource
                             ->afterStateUpdated(fn ($state, $set) => $set('slug', \Illuminate\Support\Str::slug($state))),
                         Forms\Components\TextInput::make('slug')
                             ->required()
-                            ->unique(DisciplineCategory::class, 'slug', fn ($record) => $record?->id)
+                            ->unique(DisciplineCategory::class, 'slug', ignoreRecord: true)
                             ->maxLength(255)
                             ->helperText('URL-safe key, auto-generated from name.'),
                         Forms\Components\Toggle::make('is_active')

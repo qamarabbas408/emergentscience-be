@@ -34,7 +34,7 @@ class ArticleResource extends Resource
                             ->columnSpanFull(),
                         Forms\Components\TextInput::make('slug')
                             ->required()
-                            ->unique(Article::class, 'slug', fn ($record) => $record?->id)
+                            ->unique(Article::class, 'slug', ignoreRecord: true)
                             ->maxLength(255),
                         Forms\Components\Select::make('journal_id')
                             ->relationship('journal', 'title')
