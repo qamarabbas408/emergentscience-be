@@ -69,9 +69,19 @@ class Article extends Model
         return $this->hasMany(ArticleAuthor::class);
     }
 
-    public function files(): HasMany
+    public function submissions(): HasMany
     {
-        return $this->hasMany(ArticleFile::class);
+        return $this->hasMany(Submission::class);
+    }
+
+    public function latestSubmission(): ?Submission
+    {
+        return $this->submissions()->latest('round')->first();
+    }
+
+    public function files(): HasManyThrough
+    {
+        return $this->hasManyThrough(ArticleFile::class, Submission::class);
     }
 
     public function getRouteKeyName(): string

@@ -157,6 +157,38 @@ class ArticleTypeResource extends Resource
                                         }
                                     }),
                             ]),
+                        Forms\Components\Section::make('Reviewer Materials')
+                            ->icon('heroicon-o-lock-closed')
+                            ->columns(3)
+                            ->schema([
+                                Forms\Components\Toggle::make('reviewer_materials_enabled')
+                                    ->label('Enabled')
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['reviewer_materials']['enabled'] ?? false);
+                                        }
+                                    }),
+                                Forms\Components\TextInput::make('reviewer_materials_max_size_mb')
+                                    ->label('Max Size (MB)')
+                                    ->numeric()
+                                    ->default(50)
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['reviewer_materials']['max_size_mb'] ?? 50);
+                                        }
+                                    }),
+                                Forms\Components\TagsInput::make('reviewer_materials_extensions')
+                                    ->label('Allowed Extensions')
+                                    ->placeholder('.pdf, .doc, .docx')
+                                    ->afterStateHydrated(function ($component, $operation, $record) {
+                                        if ($record) {
+                                            $fr = $record->file_requirements;
+                                            $component->state($fr['reviewer_materials']['extensions'] ?? []);
+                                        }
+                                    }),
+                            ]),
                     ]),
             ]);
     }

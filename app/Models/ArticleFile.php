@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ArticleFile extends Model
 {
     protected $fillable = [
-        'article_id',
+        'submission_id',
         'file_type',
-        'file_path',
+        'original_name',
+        'storage_path',
         'file_name',
         'file_size',
         'mime_type',
@@ -23,8 +24,20 @@ class ArticleFile extends Model
         ];
     }
 
+    public function submission(): BelongsTo
+    {
+        return $this->belongsTo(Submission::class);
+    }
+
     public function article(): BelongsTo
     {
-        return $this->belongsTo(Article::class);
+        return $this->hasOneThrough(
+            Article::class,
+            Submission::class,
+            'id',       // submissions.id
+            'id',       // articles.id
+            'submission_id', // article_files.submission_id
+            'article_id'     // submissions.article_id
+        );
     }
 }

@@ -11,12 +11,14 @@ class ArticleTypeSeeder extends Seeder
         'manuscript' => ['enabled' => true, 'max_size_mb' => 50, 'extensions' => ['.doc', '.docx', '.zip', '.pdf']],
         'figures' => ['enabled' => true, 'max_size_mb' => 20, 'extensions' => ['.tif', '.tiff', '.jpg', '.jpeg', '.png', '.eps', '.pdf']],
         'supplementary' => ['enabled' => true, 'max_size_mb' => 200, 'extensions' => ['.pdf', '.xlsx', '.csv', '.docx', '.pptx', '.zip', '.mp4']],
+        'reviewer_materials' => ['enabled' => true, 'max_size_mb' => 50, 'extensions' => ['.pdf', '.doc', '.docx']],
     ];
 
     private static array $noFiles = [
         'manuscript' => ['enabled' => false],
         'figures' => ['enabled' => false],
         'supplementary' => ['enabled' => false],
+        'reviewer_materials' => ['enabled' => false],
     ];
 
     public function run(): void

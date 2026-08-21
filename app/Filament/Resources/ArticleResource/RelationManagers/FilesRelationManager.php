@@ -21,6 +21,7 @@ class FilesRelationManager extends RelationManager
                         'manuscript' => 'Manuscript',
                         'figures' => 'Figures',
                         'supplementary' => 'Supplementary',
+                        'reviewer_materials' => 'Reviewer Materials',
                     ])
                     ->required(),
                 Forms\Components\FileUpload::make('file_path')
@@ -55,6 +56,7 @@ class FilesRelationManager extends RelationManager
                         'manuscript' => 'info',
                         'figures' => 'success',
                         'supplementary' => 'warning',
+                        'reviewer_materials' => 'danger',
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('file_name')
