@@ -19,7 +19,7 @@ class JournalApiTest extends TestCase
         $response = $this->getJson('/api/v1/journals');
 
         $response->assertOk()
-            ->assertJsonStructure(['success', 'message', 'data' => [['id', 'slug', 'title', 'tagline', 'category', 'is_new', 'sections_count', 'articles_count', 'views', 'citations', 'impact_factor', 'citescore']], 'meta'])
+            ->assertJsonStructure(['success', 'message', 'data' => [['id', 'slug', 'title', 'tagline', 'category', 'is_new', 'sections_count', 'articles_count', 'topics_count', 'views', 'citations', 'impact_factor', 'citescore']], 'meta'])
             ->assertJsonPath('success', true)
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.title', 'Visible Journal');
@@ -40,7 +40,7 @@ class JournalApiTest extends TestCase
 
         $this->getJson("/api/v1/journals/{$journal->id}")
             ->assertOk()
-            ->assertJsonStructure(['success', 'message', 'data' => ['id', 'slug', 'title', 'tagline', 'category', 'is_new', 'field_chief_editor', 'sections_count', 'articles_count', 'views', 'citations', 'impact_factor', 'citescore']]);
+            ->assertJsonStructure(['success', 'message', 'data' => ['id', 'slug', 'title', 'tagline', 'category', 'is_new', 'field_chief_editor', 'sections_count', 'articles_count', 'topics_count', 'views', 'citations', 'impact_factor', 'citescore']]);
     }
 
     public function test_cannot_view_an_inactive_journal(): void
