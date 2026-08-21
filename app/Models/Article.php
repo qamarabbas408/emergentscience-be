@@ -69,6 +69,11 @@ class Article extends Model
         return $this->hasMany(ArticleAuthor::class);
     }
 
+    public function files(): HasMany
+    {
+        return $this->hasMany(ArticleFile::class);
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';

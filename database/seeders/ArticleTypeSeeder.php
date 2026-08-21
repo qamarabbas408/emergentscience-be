@@ -7,6 +7,18 @@ use Illuminate\Database\Seeder;
 
 class ArticleTypeSeeder extends Seeder
 {
+    private static array $fullFiles = [
+        'manuscript' => ['enabled' => true, 'max_size_mb' => 50, 'extensions' => ['.doc', '.docx', '.zip', '.pdf']],
+        'figures' => ['enabled' => true, 'max_size_mb' => 20, 'extensions' => ['.tif', '.tiff', '.jpg', '.jpeg', '.png', '.eps', '.pdf']],
+        'supplementary' => ['enabled' => true, 'max_size_mb' => 200, 'extensions' => ['.pdf', '.xlsx', '.csv', '.docx', '.pptx', '.zip', '.mp4']],
+    ];
+
+    private static array $noFiles = [
+        'manuscript' => ['enabled' => false],
+        'figures' => ['enabled' => false],
+        'supplementary' => ['enabled' => false],
+    ];
+
     public function run(): void
     {
         $types = [
@@ -19,6 +31,7 @@ class ArticleTypeSeeder extends Seeder
                 'max_summary_words' => 350,
                 'max_figures_tables' => 15,
                 'is_active' => true,
+                'file_requirements' => self::$fullFiles,
             ],
             [
                 'slug' => 'SYSTEMATIC_REVIEW',
@@ -29,6 +42,7 @@ class ArticleTypeSeeder extends Seeder
                 'max_summary_words' => 350,
                 'max_figures_tables' => 15,
                 'is_active' => true,
+                'file_requirements' => self::$fullFiles,
             ],
             [
                 'slug' => 'REVIEW',
@@ -39,6 +53,7 @@ class ArticleTypeSeeder extends Seeder
                 'max_summary_words' => 350,
                 'max_figures_tables' => 15,
                 'is_active' => true,
+                'file_requirements' => self::$fullFiles,
             ],
             [
                 'slug' => 'MINI_REVIEW',
@@ -49,6 +64,7 @@ class ArticleTypeSeeder extends Seeder
                 'max_summary_words' => 350,
                 'max_figures_tables' => 2,
                 'is_active' => true,
+                'file_requirements' => self::$fullFiles,
             ],
             [
                 'slug' => 'METHODS',
@@ -59,6 +75,7 @@ class ArticleTypeSeeder extends Seeder
                 'max_summary_words' => 350,
                 'max_figures_tables' => 15,
                 'is_active' => true,
+                'file_requirements' => self::$fullFiles,
             ],
             [
                 'slug' => 'PERSPECTIVE',
@@ -69,6 +86,7 @@ class ArticleTypeSeeder extends Seeder
                 'max_summary_words' => 350,
                 'max_figures_tables' => 2,
                 'is_active' => true,
+                'file_requirements' => self::$fullFiles,
             ],
             [
                 'slug' => 'DATA_REPORT',
@@ -79,6 +97,7 @@ class ArticleTypeSeeder extends Seeder
                 'max_summary_words' => 350,
                 'max_figures_tables' => 2,
                 'is_active' => true,
+                'file_requirements' => self::$fullFiles,
             ],
             [
                 'slug' => 'POLICY_PRACTICE_REVIEWS',
@@ -89,6 +108,7 @@ class ArticleTypeSeeder extends Seeder
                 'max_summary_words' => 350,
                 'max_figures_tables' => 15,
                 'is_active' => true,
+                'file_requirements' => self::$fullFiles,
             ],
         ];
 

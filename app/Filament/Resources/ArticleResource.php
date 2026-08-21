@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Filament\Resources\ArticleResource\RelationManagers\AuthorsRelationManager;
+use App\Filament\Resources\ArticleResource\RelationManagers\FilesRelationManager;
 use App\Models\Article;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -190,6 +191,7 @@ class ArticleResource extends Resource
     {
         return [
             AuthorsRelationManager::class,
+            FilesRelationManager::class,
         ];
     }
 
