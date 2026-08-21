@@ -16,10 +16,6 @@ class ArticleTypeController extends Controller
             ->orderBy('sort_order')
             ->get(['slug', 'name', 'max_word_count', 'max_summary_words', 'max_figures_tables', 'file_requirements']);
 
-        $types->each(function ($type) {
-            $type->file_requirements = json_decode($type->file_requirements, true);
-        });
-
         return $this->success($types);
     }
 }
