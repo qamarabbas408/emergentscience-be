@@ -59,11 +59,58 @@ class ArticleTypeResource extends Resource
                             ->helperText('Max figures + tables'),
                     ]),
                 Forms\Components\Section::make('File Requirements')
-                    ->description('JSON config controlling file upload sections. Keys: manuscript, figures, supplementary. Each with enabled (bool), max_size_mb (int), extensions (array).')
+                    ->description('Configure which file types are allowed for this article type.')
                     ->schema([
-                        Forms\Components\Textarea::make('file_requirements')
-                            ->rows(12)
-                            ->columnSpanFull(),
+                        Forms\Components\Repeater::make('file_requirements')
+                            ->schema([
+                                Forms\Components\TextInput::make('key')
+                                    ->label('Section')
+                                    ->required()
+                                    ->readOnly()
+                                    ->columnSpan(2),
+                                Forms\Components\Toggle::make('enabled')
+                                    ->label('Enabled')
+                                    ->default(true),
+                                Forms\Components\TextInput::make('max_size_mb')
+                                    ->label('Max Size (MB)')
+                                    ->numeric()
+                                    ->default(50)
+                                    ->columnSpan(2),
+                                Forms\Components\TagsInput::make('extensions')
+                                    ->label('Allowed Extensions')
+                                    ->placeholder('.pdf, .docx')
+                                    ->columnSpan(3),
+                            ])
+                            ->columns(4)
+                            ->defaultItems(0)
+                            ->addActionLabel('Add File Section')
+                            ->reorderable(false)
+                            ->afterStateHydrated(function ($component, $state) {
+                                if (is_string($state)) {
+                                    $state = json_decode($state, true);
+                                }
+                                if (is_array($state) && array_is_list($state) === false) {
+                                    $items = [];
+                                    foreach ($state as $key => $value) {
+                                        $items[] = array_merge(['key' => $key], (array) $value);
+                                    }
+                                    $component->state($items);
+                                }
+                            })
+                            ->dehydrateStateUsing(function (array $state): array {
+                                $result = [];
+                                foreach ($state as $item) {
+                                    $key = $item['key'] ?? null;
+                                    if ($key) {
+                                        $result[$key] = [
+                                            'enabled' => (bool) ($item['enabled'] ?? false),
+                                            'max_size_mb' => (int) ($item['max_size_mb'] ?? 50),
+                                            'extensions' => $item['extensions'] ?? [],
+                                        ];
+                                    }
+                                }
+                                return $result;
+                            }),
                     ]),
             ]);
     }
