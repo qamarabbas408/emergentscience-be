@@ -30,6 +30,8 @@ Route::middleware('throttle:60,1')->group(function (): void {
     Route::get('/journals/{journal}/topics', [TopicController::class, 'index'])->name('journals.topics.index');
     Route::get('/journals/{journal}/topics/{topic}', [TopicController::class, 'show'])->name('journals.topics.show');
 
+    Route::get('/topics', [TopicController::class, 'indexAll'])->name('topics.index');
+    Route::get('/topics/{topic}', [TopicController::class, 'showBySlug'])->name('topics.show');
     Route::get('/topics/{topic}/articles', [ArticleController::class, 'byTopic'])->name('topics.articles.index');
 });
 

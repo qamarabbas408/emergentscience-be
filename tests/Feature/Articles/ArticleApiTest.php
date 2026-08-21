@@ -172,7 +172,7 @@ class ArticleApiTest extends TestCase
 
         $this->createPublished(['title' => 'Other Paper']);
 
-        $response = $this->getJson("/api/v1/topics/{$topic->id}/articles");
+        $response = $this->getJson("/api/v1/topics/{$topic->slug}/articles");
 
         $response->assertOk()
             ->assertJsonCount(1, 'data')

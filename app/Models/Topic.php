@@ -30,4 +30,9 @@ class Topic extends Model
             'sort_order' => 'integer',
         ];
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 }

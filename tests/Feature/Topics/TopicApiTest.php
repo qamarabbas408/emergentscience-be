@@ -64,7 +64,7 @@ class TopicApiTest extends TestCase
         $journal = Journal::factory()->create(['is_active' => true]);
         $topic = Topic::factory()->create(['journal_id' => $journal->id, 'is_active' => true]);
 
-        $response = $this->getJson("/api/v1/journals/{$journal->id}/topics/{$topic->id}");
+        $response = $this->getJson("/api/v1/journals/{$journal->id}/topics/{$topic->slug}");
 
         $response->assertOk()
             ->assertJsonStructure(['success', 'message', 'data' => ['id', 'journal_id', 'slug', 'title', 'is_active']]);
@@ -76,7 +76,7 @@ class TopicApiTest extends TestCase
         $journalB = Journal::factory()->create(['is_active' => true]);
         $topic = Topic::factory()->create(['journal_id' => $journalB->id, 'is_active' => true]);
 
-        $this->getJson("/api/v1/journals/{$journalA->id}/topics/{$topic->id}")
+        $this->getJson("/api/v1/journals/{$journalA->id}/topics/{$topic->slug}")
             ->assertNotFound();
     }
 
@@ -85,7 +85,7 @@ class TopicApiTest extends TestCase
         $journal = Journal::factory()->create(['is_active' => true]);
         $topic = Topic::factory()->create(['journal_id' => $journal->id, 'is_active' => false]);
 
-        $this->getJson("/api/v1/journals/{$journal->id}/topics/{$topic->id}")
+        $this->getJson("/api/v1/journals/{$journal->id}/topics/{$topic->slug}")
             ->assertNotFound();
     }
 
@@ -93,7 +93,7 @@ class TopicApiTest extends TestCase
     {
         $journal = Journal::factory()->create(['is_active' => true]);
 
-        $this->getJson("/api/v1/journals/{$journal->id}/topics/9999")
+        $this->getJson("/api/v1/journals/{$journal->id}/topics/nonexistent-slug")
             ->assertNotFound();
     }
 

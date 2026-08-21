@@ -17,6 +17,12 @@ class TopicResource extends JsonResource
             'description' => $this->description,
             'is_active' => $this->is_active,
             'sort_order' => $this->sort_order,
+            'journal' => $this->whenLoaded('journal', fn () => [
+                'id' => $this->journal->id,
+                'slug' => $this->journal->slug,
+                'title' => $this->journal->title,
+                'abbreviation' => $this->journal->abbreviation,
+            ]),
         ];
     }
 }
