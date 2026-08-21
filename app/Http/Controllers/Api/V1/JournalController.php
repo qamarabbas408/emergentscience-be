@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\JournalResource;
-        use App\Models\DisciplineCategory;
-        use App\Models\Journal;
+use App\Models\Journal;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -55,10 +54,6 @@ class JournalController extends Controller
         $perPage = max(1, min((int) $request->input('per_page', 12), 50));
         $journals = $query->paginate($perPage);
 
-        $facets = [
-            'discipline_categories' => $this->buildDisciplineFacets($request),
-        ];
-
         return $this->paginated(
             JournalResource::collection($journals->items()),
             [
@@ -67,7 +62,6 @@ class JournalController extends Controller
                 'per_page' => $journals->perPage(),
                 'total' => $journals->total(),
             ],
-            facets: $facets
         );
     }
 
@@ -84,36 +78,5 @@ class JournalController extends Controller
         $journal->loadCount('articles', 'topics');
 
         return $this->success(new JournalResource($journal));
-    }
-
-    private function buildDisciplineFacets(Request $request): array
-    {
-        $categorySlug = $request->filled('category') ? $request->input('category') : null;
-
-        $baseQuery = Journal::query()->where('is_active', true);
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $baseQuery->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('abbreviation', 'like', "%{$search}%")
-                    ->orWhere('scope', 'like', "%{$search}%");
-            });
-        }
-
-        $allCategories = DisciplineCategory::query()->orderBy('name')->get();
-
-        return $allCategories->map(function ($cat) use ($baseQuery) {
-            $count = (clone $baseQuery)
-                ->whereHas('disciplineCategories', fn ($q) => $q->where('slug', $cat->slug))
-                ->count();
-
-            return [
-                'id' => $cat->id,
-                'slug' => $cat->slug,
-                'name' => $cat->name,
-                'count' => $count,
-            ];
-        })->values()->all();
     }
 }
