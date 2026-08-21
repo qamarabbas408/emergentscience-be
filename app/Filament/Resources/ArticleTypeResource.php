@@ -63,12 +63,7 @@ class ArticleTypeResource extends Resource
                     ->schema([
                         Forms\Components\Textarea::make('file_requirements')
                             ->rows(12)
-                            ->columnSpanFull()
-                            ->afterStateHydrated(function ($component, $state) {
-                                if (is_array($state)) {
-                                    $component->state(json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-                                }
-                            }),
+                            ->columnSpanFull(),
                     ]),
             ]);
     }

@@ -28,7 +28,6 @@ class ArticleType extends Model
             'max_word_count' => 'integer',
             'max_summary_words' => 'integer',
             'max_figures_tables' => 'integer',
-            'file_requirements' => 'array',
         ];
     }
 }
