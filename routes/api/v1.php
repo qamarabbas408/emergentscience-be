@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\MeController;
 use App\Http\Controllers\Api\V1\Auth\RegisterController;
+use App\Http\Controllers\Api\V1\ArticleController;
 use App\Http\Controllers\Api\V1\ArticleTypeController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\JournalController;
@@ -15,14 +16,21 @@ Route::get('/health', HealthController::class)->name('health');
 
 Route::middleware('throttle:60,1')->group(function (): void {
     Route::get('/article-types', ArticleTypeController::class)->name('article-types.index');
+
+    Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+    Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
+
     Route::get('/discipline-categories', [DisciplineCategoryController::class, 'index'])->name('discipline-categories.index');
     Route::get('/discipline-categories/{category}', [DisciplineCategoryController::class, 'show'])->name('discipline-categories.show');
     Route::get('/discipline-categories/{category}/journals', [DisciplineCategoryController::class, 'journals'])->name('discipline-categories.journals');
 
     Route::get('/journals', [JournalController::class, 'index'])->name('journals.index');
     Route::get('/journals/{journal}', [JournalController::class, 'show'])->name('journals.show');
+    Route::get('/journals/{journal}/articles', [ArticleController::class, 'byJournal'])->name('journals.articles.index');
     Route::get('/journals/{journal}/topics', [TopicController::class, 'index'])->name('journals.topics.index');
     Route::get('/journals/{journal}/topics/{topic}', [TopicController::class, 'show'])->name('journals.topics.show');
+
+    Route::get('/topics/{topic}/articles', [ArticleController::class, 'byTopic'])->name('topics.articles.index');
 });
 
 Route::prefix('auth')->as('auth.')->group(function (): void {
