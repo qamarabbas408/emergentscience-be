@@ -58,6 +58,20 @@ class ArticleTypeResource extends Resource
                             ->numeric()
                             ->helperText('Max figures + tables'),
                     ]),
+                Forms\Components\Section::make('File Requirements')
+                    ->description('JSON config controlling file upload sections. Keys: manuscript, figures, supplementary. Each with enabled (bool), max_size_mb (int), extensions (array).')
+                    ->schema([
+                        Forms\Components\Textarea::make('file_requirements')
+                            ->rows(12)
+                            ->columnSpanFull()
+                            ->fontFamily('monospace')
+                            ->dehydrateStateUsing(fn ($state) => is_string($state) ? json_decode($state, true) : $state)
+                            ->afterStateHydrated(function ($component, $state) {
+                                if (is_array($state)) {
+                                    $component->state(json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+                                }
+                            }),
+                    ]),
             ]);
     }
 
