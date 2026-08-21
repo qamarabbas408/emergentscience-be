@@ -15,14 +15,20 @@ trait ApiResponse
         ], $code);
     }
 
-    protected function paginated($data, array $meta, string $message = 'Resources retrieved successfully.'): JsonResponse
+    protected function paginated($data, array $meta, string $message = 'Resources retrieved successfully.', ?array $facets = null): JsonResponse
     {
-        return response()->json([
+        $response = [
             'success' => true,
             'message' => $message,
             'data' => $data,
             'meta' => $meta,
-        ]);
+        ];
+
+        if ($facets !== null) {
+            $response['facets'] = $facets;
+        }
+
+        return response()->json($response);
     }
 
     protected function created($data, string $message = 'Resource created successfully.'): JsonResponse
