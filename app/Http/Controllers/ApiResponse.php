@@ -6,13 +6,19 @@ use Illuminate\Http\JsonResponse;
 
 trait ApiResponse
 {
-    protected function success($data, string $message = 'Resource retrieved successfully.', int $code = 200): JsonResponse
+    protected function success($data, string $message = 'Resource retrieved successfully.', int $code = 200, ?array $facets = null): JsonResponse
     {
-        return response()->json([
+        $response = [
             'success' => true,
             'message' => $message,
             'data' => $data,
-        ], $code);
+        ];
+
+        if ($facets !== null) {
+            $response['facets'] = $facets;
+        }
+
+        return response()->json($response, $code);
     }
 
     protected function paginated($data, array $meta, string $message = 'Resources retrieved successfully.', ?array $facets = null): JsonResponse

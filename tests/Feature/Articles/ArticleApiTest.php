@@ -110,7 +110,6 @@ class ArticleApiTest extends TestCase
     {
         $article = $this->createPublished();
         $topic = Topic::create([
-            'journal_id' => $this->journal->id,
             'slug' => 'quantum-physics',
             'title' => 'Quantum Physics',
             'description' => 'Study of quantum phenomena.',
@@ -162,7 +161,6 @@ class ArticleApiTest extends TestCase
     public function test_topic_articles_endpoint(): void
     {
         $topic = Topic::create([
-            'journal_id' => $this->journal->id,
             'slug' => 'materials',
             'title' => 'Materials',
             'description' => 'Desc',

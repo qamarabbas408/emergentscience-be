@@ -18,9 +18,9 @@ class Journal extends Model
         return $this->belongsToMany(DisciplineCategory::class)->withTimestamps();
     }
 
-    public function topics(): HasMany
+    public function topics(): BelongsToMany
     {
-        return $this->hasMany(Topic::class);
+        return $this->belongsToMany(Topic::class, 'journal_topics');
     }
 
     public function articles(): HasMany

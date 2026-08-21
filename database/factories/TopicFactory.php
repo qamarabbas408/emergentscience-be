@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Journal;
 use App\Models\Topic;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -35,7 +34,6 @@ class TopicFactory extends Factory
         ]);
 
         return [
-            'journal_id' => Journal::factory(),
             'slug' => $this->faker->unique()->slug(),
             'title' => $title,
             'description' => $this->faker->sentence(12),

@@ -27,8 +27,9 @@ class TopicResource extends Resource
                 Forms\Components\Section::make('Topic Details')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\Select::make('journal_id')
-                            ->relationship('journal', 'title')
+                        Forms\Components\Select::make('journals')
+                            ->relationship('journals', 'title')
+                            ->multiple()
                             ->required()
                             ->searchable()
                             ->preload(),
@@ -45,6 +46,9 @@ class TopicResource extends Resource
                         Forms\Components\Toggle::make('is_active')
                             ->label('Accepting submissions')
                             ->default(true),
+                        Forms\Components\DatePicker::make('submission_deadline')
+                            ->label('Submission Deadline')
+                            ->helperText('Last date for submissions. Shown to authors.'),
                         Forms\Components\TextInput::make('sort_order')
                             ->numeric()
                             ->helperText('Display order within the journal.'),
@@ -62,9 +66,8 @@ class TopicResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('journal.title')
-                    ->label('Journal')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('journals.title')
+                    ->label('Journals')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
@@ -77,16 +80,15 @@ class TopicResource extends Resource
                 Tables\Columns\TextColumn::make('sort_order')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('submission_deadline')
+                    ->date('d M Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('journal_id')
-                    ->relationship('journal', 'title')
-                    ->label('Journal')
-                    ->searchable()
-                    ->preload(),
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Accepting submissions'),
             ])
@@ -106,9 +108,7 @@ class TopicResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            // reserved for future RelationManagers (manuscripts)
-        ];
+        return [];
     }
 
     public static function getPages(): array

@@ -2,20 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[Fillable(['journal_id', 'slug', 'title', 'description', 'is_active', 'sort_order'])]
 class Topic extends Model
 {
     use HasFactory;
 
-    public function journal(): BelongsTo
+    protected $fillable = [
+        'slug',
+        'title',
+        'description',
+        'is_active',
+        'sort_order',
+        'submission_deadline',
+    ];
+
+    public function journals(): BelongsToMany
     {
-        return $this->belongsTo(Journal::class);
+        return $this->belongsToMany(Journal::class, 'journal_topics');
     }
 
     public function articles(): BelongsToMany
@@ -28,6 +35,7 @@ class Topic extends Model
         return [
             'is_active' => 'boolean',
             'sort_order' => 'integer',
+            'submission_deadline' => 'date',
         ];
     }
 

@@ -11,18 +11,19 @@ class TopicResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'journal_id' => $this->journal_id,
             'slug' => $this->slug,
             'title' => $this->title,
             'description' => $this->description,
             'is_active' => $this->is_active,
             'sort_order' => $this->sort_order,
-            'journal' => $this->whenLoaded('journal', fn () => [
-                'id' => $this->journal->id,
-                'slug' => $this->journal->slug,
-                'title' => $this->journal->title,
-                'abbreviation' => $this->journal->abbreviation,
-            ]),
+            'submission_deadline' => $this->submission_deadline?->format('d F Y'),
+            'article_count' => $this->whenCounted('articles'),
+            'journals' => $this->whenLoaded('journals', fn () => $this->journals->map(fn ($j) => [
+                'id' => $j->id,
+                'slug' => $j->slug,
+                'title' => $j->title,
+                'abbreviation' => $j->abbreviation,
+            ])),
         ];
     }
 }
