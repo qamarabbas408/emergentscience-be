@@ -32,6 +32,14 @@ class ArticleController extends Controller
             $query->whereHas('articleType', fn ($q) => $q->where('slug', $request->input('type')));
         }
 
+        if ($request->filled('published_from')) {
+            $query->where('publication_date', '>=', $request->input('published_from'));
+        }
+
+        if ($request->filled('published_to')) {
+            $query->where('publication_date', '<=', $request->input('published_to'));
+        }
+
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
@@ -79,6 +87,14 @@ class ArticleController extends Controller
             $query->whereHas('articleType', fn ($q) => $q->where('slug', $request->input('type')));
         }
 
+        if ($request->filled('published_from')) {
+            $query->where('publication_date', '>=', $request->input('published_from'));
+        }
+
+        if ($request->filled('published_to')) {
+            $query->where('publication_date', '<=', $request->input('published_to'));
+        }
+
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
@@ -117,6 +133,14 @@ class ArticleController extends Controller
 
         if ($request->filled('type')) {
             $query->whereHas('articleType', fn ($q) => $q->where('slug', $request->input('type')));
+        }
+
+        if ($request->filled('published_from')) {
+            $query->where('publication_date', '>=', $request->input('published_from'));
+        }
+
+        if ($request->filled('published_to')) {
+            $query->where('publication_date', '<=', $request->input('published_to'));
         }
 
         if ($request->filled('search')) {

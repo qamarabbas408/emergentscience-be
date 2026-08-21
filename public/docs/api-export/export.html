@@ -19,7 +19,16 @@
         .toast.success { background: #16a34a; }
         .json-panel { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
         .json-panel.open { max-height: 600px; overflow-y: auto; }
-        pre.json { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.5; overflow-x: auto; margin: 0; font-family: 'SF Mono', 'Fira Code', monospace; }
+        pre.json { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 0 0 8px 8px; font-size: 13px; line-height: 1.5; overflow-x: auto; margin: 0; font-family: 'SF Mono', 'Fira Code', monospace; position: relative; }
+        .json-toolbar { display: flex; align-items: center; justify-content: space-between; background: #11111b; padding: 6px 14px; border-radius: 8px 8px 0 0; border-bottom: 1px solid #313244; }
+        .json-toolbar .left { display: flex; align-items: center; gap: 8px; }
+        .json-toolbar .right { display: flex; align-items: center; gap: 6px; }
+        .json-toolbar button { font-size: 11px; padding: 3px 10px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.15s; }
+        .minify-toggle { background: #313244; color: #a6adc8; }
+        .minify-toggle:hover { background: #45475a; color: #cdd6f4; }
+        .minify-toggle.active { background: #585b70; color: #cdd6f4; }
+        .copy-btn { background: #313244; color: #a6adc8; }
+        .copy-btn:hover { background: #45475a; color: #cdd6f4; }
         .chevron { transition: transform 0.2s ease; }
         .chevron.open { transform: rotate(90deg); }
     </style>
@@ -59,6 +68,15 @@
         let spec = {};
         let endpoints = [];
         let minifiedState = {};
+        let responseMode = {};
+        const mockExamples = {
+            integer: 1,
+            int: 1,
+            number: 1.0,
+            string: 'example',
+            boolean: true,
+            array: [],
+        };
 
         (async () => {
             const res = await fetch('/docs/api.json');
@@ -75,6 +93,75 @@
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('endpoints').classList.remove('hidden');
         })();
+
+        function resolveRef(ref) {
+            if (!ref || !ref.startsWith('#/')) return {};
+            const parts = ref.replace('#/', '').split('/');
+            let node = spec;
+            for (const p of parts) node = node?.[p] || {};
+            return node;
+        }
+
+        function generateMock(schema) {
+            if (!schema) return null;
+            if (schema.example !== undefined) return schema.example;
+            if (schema.const !== undefined) return schema.const;
+            if (schema.default !== undefined) return schema.default;
+
+            if (schema.allOf) {
+                const merged = {};
+                schema.allOf.forEach(s => Object.assign(merged, generateMock(s) || {}));
+                return merged;
+            }
+            if (schema.anyOf || schema.oneOf) {
+                return generateMock((schema.anyOf || schema.oneOf)[0]);
+            }
+            if (schema.$ref) return generateMock(resolveRef(schema.$ref));
+
+            if (schema.type === 'object') {
+                const obj = {};
+                for (const [k, v] of Object.entries(schema.properties || {})) {
+                    obj[k] = generateMock(v);
+                }
+                return obj;
+            }
+            if (schema.type === 'array') {
+                const item = generateMock(schema.items);
+                return item !== null ? [item] : [];
+            }
+            if (schema.type === 'string') {
+                if (schema.enum) return schema.enum[0];
+                if (schema.format === 'date') return '2026-01-15';
+                if (schema.format === 'date-time') return '2026-01-15T10:30:00Z';
+                if (schema.format === 'email') return 'user@example.com';
+                return schema.description || 'example';
+            }
+            if (schema.type === 'boolean') return true;
+            if (schema.type === 'integer' || schema.type === 'number') return 1;
+            if (Array.isArray(schema.type) && schema.type.includes('null')) {
+                const nonNull = schema.type.find(t => t !== 'null');
+                return generateMock({ type: nonNull });
+            }
+            return null;
+        }
+
+        function getResponseJson(ep) {
+            for (const m of ep.methods) {
+                const op = ep.raw[m];
+                const resp = op?.responses?.['200'] || op?.responses?.['201'];
+                const content = resp?.content?.['application/json'];
+                if (content?.schema) {
+                    const message = content.schema?.properties?.message?.const || 'Resources retrieved successfully.';
+                    const data = generateMock(content.schema?.properties?.data);
+                    const meta = generateMock(content.schema?.properties?.meta);
+                    const result = { success: true, message };
+                    if (data !== undefined && data !== null) result.data = data;
+                    if (meta) result.meta = meta;
+                    return result;
+                }
+            }
+            return null;
+        }
 
         function render() {
             const container = document.getElementById('endpoints');
@@ -111,11 +198,14 @@
                                     ${ep.summary ? `<span class="text-xs text-gray-400 ml-auto truncate max-w-xs">${ep.summary}</span>` : ''}
                                 </div>
                                 <div class="json-panel" id="panel-${uid}">
-                                    <div class="px-5 py-3 bg-gray-900 flex items-center justify-between">
-                                        <span class="text-xs text-gray-400 font-mono">${ep.path}</span>
-                                        <div class="flex items-center gap-2">
-                                            <button onclick="toggleMinify('${uid}')" class="text-xs px-2.5 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 hover:text-white transition" id="minify-btn-${uid}">Minify</button>
-                                            <button onclick="copyEndpointJson('${uid}')" class="text-xs px-2.5 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 hover:text-white transition">Copy JSON</button>
+                                    <div class="json-toolbar" id="toolbar-${uid}">
+                                        <div class="left">
+                                            <span class="text-xs text-gray-500 font-mono" id="view-label-${uid}">spec</span>
+                                            <button onclick="toggleResponseView('${uid}')" id="resp-btn-${uid}" style="background:#1e3a5f;color:#93c5fd;">Show Response</button>
+                                        </div>
+                                        <div class="right">
+                                            <button onclick="toggleMinify('${uid}')" class="minify-toggle" id="minify-btn-${uid}">Minify</button>
+                                            <button onclick="copyCurrentJson('${uid}')" class="copy-btn">Copy</button>
                                         </div>
                                     </div>
                                     <pre class="json" id="json-${uid}">${syntaxHighlight(JSON.stringify(ep.raw, null, 2))}</pre>
@@ -191,11 +281,61 @@
             showToast('Copied to clipboard!');
         }
 
-        async function copyEndpointJson(uid) {
+        async function copyCurrentJson(uid) {
+            const ep = endpoints.find(e => e.path.replace(/[^a-zA-Z0-9]/g, '-') === uid);
+            const data = responseMode[uid] ? getResponseJson(ep) : ep.raw;
+            await navigator.clipboard.writeText(JSON.stringify(data, null, minifiedState[uid] ? 0 : 2));
+            showToast('Copied!');
+        }
+
+        function toggleResponseView(uid) {
+            const ep = endpoints.find(e => e.path.replace(/[^a-zA-Z0-9]/g, '-') === uid);
             const el = document.getElementById('json-' + uid);
-            const text = el.textContent;
-            await navigator.clipboard.writeText(text);
-            showToast('Endpoint JSON copied!');
+            const btn = document.getElementById('resp-btn-' + uid);
+            const label = document.getElementById('view-label-' + uid);
+
+            responseMode[uid] = !responseMode[uid];
+            const pretty = !minifiedState[uid];
+
+            if (responseMode[uid]) {
+                const resp = getResponseJson(ep);
+                el.innerHTML = resp
+                    ? (pretty ? syntaxHighlight(JSON.stringify(resp, null, 2)) : JSON.stringify(resp))
+                    : '<span style="color:#f38ba8">No response schema</span>';
+                btn.textContent = 'Show Spec';
+                btn.style.background = '#14532d';
+                btn.style.color = '#86efac';
+                label.textContent = 'response';
+            } else {
+                el.innerHTML = pretty
+                    ? syntaxHighlight(JSON.stringify(ep.raw, null, 2))
+                    : JSON.stringify(ep.raw);
+                btn.textContent = 'Show Response';
+                btn.style.background = '#1e3a5f';
+                btn.style.color = '#93c5fd';
+                label.textContent = 'spec';
+            }
+        }
+
+        function toggleMinify(uid) {
+            const el = document.getElementById('json-' + uid);
+            const btn = document.getElementById('minify-btn-' + uid);
+            const ep = endpoints.find(e => e.path.replace(/[^a-zA-Z0-9]/g, '-') === uid);
+
+            minifiedState[uid] = !minifiedState[uid];
+            btn.classList.toggle('active', minifiedState[uid]);
+            btn.textContent = minifiedState[uid] ? 'Expand' : 'Minify';
+
+            if (responseMode[uid]) {
+                const resp = getResponseJson(ep);
+                el.innerHTML = minifiedState[uid]
+                    ? JSON.stringify(resp)
+                    : (resp ? syntaxHighlight(JSON.stringify(resp, null, 2)) : '');
+            } else {
+                el.innerHTML = minifiedState[uid]
+                    ? JSON.stringify(ep.raw)
+                    : syntaxHighlight(JSON.stringify(ep.raw, null, 2));
+            }
         }
 
         function syntaxHighlight(json) {
@@ -205,22 +345,6 @@
                 .replace(/: (true|false)/g, ': <span style="color:#fab387">$1</span>')
                 .replace(/: (\d+)/g, ': <span style="color:#f9e2af">$1</span>')
                 .replace(/: (null)/g, ': <span style="color:#f38ba8">$1</span>');
-        }
-
-        function toggleMinify(uid) {
-            const el = document.getElementById('json-' + uid);
-            const btn = document.getElementById('minify-btn-' + uid);
-            const ep = endpoints.find(e => e.path.replace(/[^a-zA-Z0-9]/g, '-') === uid);
-
-            minifiedState[uid] = !minifiedState[uid];
-
-            if (minifiedState[uid]) {
-                el.textContent = JSON.stringify(ep.raw);
-                btn.textContent = 'Expand';
-            } else {
-                el.innerHTML = syntaxHighlight(JSON.stringify(ep.raw, null, 2));
-                btn.textContent = 'Minify';
-            }
         }
 
         function showToast(msg) {
