@@ -9,6 +9,7 @@ class ArticleAuthor extends Model
 {
     protected $fillable = [
         'article_id',
+        'user_id',
         'name',
         'email',
         'orcid',
@@ -28,5 +29,10 @@ class ArticleAuthor extends Model
     public function article(): BelongsTo
     {
         return $this->belongsTo(Article::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

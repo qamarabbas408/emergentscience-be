@@ -14,7 +14,7 @@ return new class extends Migration
 
         Schema::table('topics', function (Blueprint $table) {
             $table->dropForeign(['journal_id']);
-            $table->dropIndex(['journal_id', 'slug']);
+            $table->dropUnique(['journal_id', 'slug']);
             $table->dropColumn('journal_id');
         });
     }
