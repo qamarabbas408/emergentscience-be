@@ -24,13 +24,23 @@ class TopicController extends Controller
 
         $this->applyFilters($query, $request);
 
+        $perPage = max(1, min((int) $request->input('per_page', 50), 100));
         $topics = $query->orderBy('topics.sort_order')
             ->orderBy('topics.title')
-            ->get();
+            ->paginate($perPage);
 
         $facets = $this->buildFacets($request);
 
-        return $this->success(TopicResource::collection($topics), facets: $facets);
+        return $this->paginated(
+            TopicResource::collection($topics->items()),
+            [
+                'current_page' => $topics->currentPage(),
+                'last_page' => $topics->lastPage(),
+                'per_page' => $topics->perPage(),
+                'total' => $topics->total(),
+            ],
+            facets: $facets
+        );
     }
 
     public function showBySlug(Topic $topic): JsonResponse
