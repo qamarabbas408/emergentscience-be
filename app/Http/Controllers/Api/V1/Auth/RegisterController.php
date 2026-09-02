@@ -15,7 +15,10 @@ class RegisterController extends Controller
 
     public function __invoke(RegisterRequest $request): JsonResponse
     {
-        $user = User::create($request->validated());
+        $data = $request->validated();
+        $data['name'] = trim($data['first_name'] . ' ' . ($data['last_name'] ?? ''));
+
+        $user = User::create($data);
         $user->refresh();
 
         $token = $user->createToken('app')->plainTextToken;

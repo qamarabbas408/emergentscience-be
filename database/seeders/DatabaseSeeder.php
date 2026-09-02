@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             DisciplineCategorySeeder::class,
             JournalSeeder::class,
+            ArticleTypeSeeder::class,
+            ArticleSeeder::class,
         ]);
     }
 }

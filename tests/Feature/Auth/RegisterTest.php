@@ -14,7 +14,8 @@ class RegisterTest extends TestCase
     public function test_user_can_register(): void
     {
         $response = $this->postJson('/api/v1/auth/register', [
-            'name' => 'Jane Doe',
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
             'email' => 'jane@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
@@ -28,14 +29,37 @@ class RegisterTest extends TestCase
 
         $this->assertDatabaseHas('users', [
             'email' => 'jane@example.com',
+            'name' => 'Jane Doe',
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
             'status' => UserStatus::Active->value,
+        ]);
+    }
+
+    public function test_user_can_register_without_last_name(): void
+    {
+        $response = $this->postJson('/api/v1/auth/register', [
+            'first_name' => 'Madonna',
+            'email' => 'madonna@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('data.user.name', 'Madonna');
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'madonna@example.com',
+            'name' => 'Madonna',
+            'last_name' => null,
         ]);
     }
 
     public function test_registration_requires_confirmed_password(): void
     {
         $this->postJson('/api/v1/auth/register', [
-            'name' => 'Jane Doe',
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
             'email' => 'jane@example.com',
             'password' => 'password',
         ])->assertStatus(422)->assertJsonValidationErrors('password');
@@ -46,7 +70,8 @@ class RegisterTest extends TestCase
         User::factory()->create(['email' => 'jane@example.com']);
 
         $this->postJson('/api/v1/auth/register', [
-            'name' => 'Jane Doe',
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
             'email' => 'jane@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
@@ -56,7 +81,8 @@ class RegisterTest extends TestCase
     public function test_password_must_be_at_least_eight_characters(): void
     {
         $this->postJson('/api/v1/auth/register', [
-            'name' => 'Jane Doe',
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
             'email' => 'jane@example.com',
             'password' => 'short',
             'password_confirmation' => 'short',
