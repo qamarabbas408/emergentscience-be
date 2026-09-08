@@ -4,6 +4,11 @@ use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\MeController;
 use App\Http\Controllers\Api\V1\Auth\RegisterController;
+use App\Http\Controllers\Api\V1\Auth\RequestReviewerController;
+use App\Http\Controllers\Api\V1\Auth\ApproveReviewerController;
+use App\Http\Controllers\Api\V1\Auth\UpdateProfileController;
+use App\Http\Controllers\Api\V1\Auth\AuthorProfileController;
+use App\Http\Controllers\Api\V1\Auth\ReviewerProfileController;
 use App\Http\Controllers\Api\V1\ArticleController;
 use App\Http\Controllers\Api\V1\ArticleTypeController;
 use App\Http\Controllers\Api\V1\HealthController;
@@ -40,4 +45,13 @@ Route::prefix('auth')->as('auth.')->group(function (): void {
     Route::post('/login', LoginController::class)->middleware('throttle:5,1')->name('login');
     Route::post('/logout', LogoutController::class)->middleware('auth:sanctum')->name('logout');
     Route::get('/me', MeController::class)->middleware('auth:sanctum')->name('me');
+    Route::put('/me', UpdateProfileController::class)->middleware('auth:sanctum')->name('me.update');
+    Route::post('/request-reviewer', RequestReviewerController::class)->middleware('auth:sanctum')->name('request-reviewer');
+    Route::post('/{userId}/approve-reviewer/{action}', ApproveReviewerController::class)->middleware('auth:sanctum')->name('approve-reviewer');
+
+    Route::get('/author-profile', [AuthorProfileController::class, 'show'])->middleware('auth:sanctum')->name('author-profile.show');
+    Route::put('/author-profile', [AuthorProfileController::class, 'update'])->middleware('auth:sanctum')->name('author-profile.update');
+
+    Route::get('/reviewer-profile', [ReviewerProfileController::class, 'show'])->middleware('auth:sanctum')->name('reviewer-profile.show');
+    Route::put('/reviewer-profile', [ReviewerProfileController::class, 'update'])->middleware('auth:sanctum')->name('reviewer-profile.update');
 });

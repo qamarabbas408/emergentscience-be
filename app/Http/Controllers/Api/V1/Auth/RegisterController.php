@@ -17,6 +17,7 @@ class RegisterController extends Controller
     {
         $data = $request->validated();
         $data['name'] = trim($data['first_name'] . ' ' . ($data['last_name'] ?? ''));
+        $data['roles'] = ['author'];
 
         $user = User::create($data);
         $user->refresh();

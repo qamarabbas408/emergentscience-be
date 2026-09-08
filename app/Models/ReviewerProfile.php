@@ -14,6 +14,7 @@ class ReviewerProfile extends Model
         'user_id',
         'expertise_keywords',
         'review_availability_status',
+        'reviewer_status',
         'max_concurrent_reviews',
         'total_reviews_completed',
         'average_review_time_days',

@@ -16,7 +16,7 @@ class User extends Authenticatable
         'name', 'email', 'password',
         'first_name', 'middle_name', 'last_name', 'title',
         'primary_affiliation', 'country', 'city', 'postal_code',
-        'orcid_id', 'biography',
+        'orcid_id', 'biography', 'roles',
     ];
 
     protected $hidden = [
@@ -29,6 +29,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'status' => \App\Enums\UserStatus::class,
+            'roles' => 'array',
         ];
     }
 
@@ -49,26 +50,44 @@ class User extends Authenticatable
 
     public function isAuthor(): bool
     {
-        return $this->authorProfile()->exists();
+        return in_array('author', $this->roles ?? []);
     }
 
     public function isReviewer(): bool
     {
-        return $this->reviewerProfile()->exists();
+        return in_array('reviewer', $this->roles ?? []);
     }
 
     public function isEditor(): bool
     {
-        return $this->editorProfile()->exists();
+        return in_array('editor', $this->roles ?? []);
     }
 
     public function getRoleNames(): array
     {
-        $roles = [];
-        if ($this->isAuthor()) $roles[] = 'author';
-        if ($this->isReviewer()) $roles[] = 'reviewer';
-        if ($this->isEditor()) $roles[] = 'editor';
-        return $roles;
+        return $this->roles ?? ['author'];
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->roles ?? []);
+    }
+
+    public function addRole(string $role): void
+    {
+        $roles = $this->roles ?? [];
+        if (! in_array($role, $roles)) {
+            $roles[] = $role;
+            $this->roles = $roles;
+            $this->save();
+        }
+    }
+
+    public function removeRole(string $role): void
+    {
+        $roles = array_diff($this->roles ?? [], [$role]);
+        $this->roles = empty($roles) ? ['author'] : array_values($roles);
+        $this->save();
     }
 
     public function getFullName(): string

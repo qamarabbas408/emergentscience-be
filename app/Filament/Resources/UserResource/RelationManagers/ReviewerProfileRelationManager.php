@@ -24,14 +24,22 @@ class ReviewerProfileRelationManager extends RelationManager
                     Forms\Components\TextInput::make('expertise_keywords')
                         ->label('Expertise Keywords (comma-separated)')
                         ->helperText('e.g. Deep Learning, Medical Imaging, Biostatistics'),
-                    Forms\Components\Select::make('review_availability_status')
-                        ->options([
-                            'Available' => 'Available',
-                            'On Leave' => 'On Leave',
-                            'Max Capacity' => 'Max Capacity',
-                        ])
-                        ->default('Available')
-                        ->required(),
+                Forms\Components\Select::make('review_availability_status')
+                    ->options([
+                        'Available' => 'Available',
+                        'On Leave' => 'On Leave',
+                        'Max Capacity' => 'Max Capacity',
+                    ])
+                    ->default('Available')
+                    ->required(),
+                Forms\Components\Select::make('reviewer_status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ])
+                    ->default('pending')
+                    ->required(),
                     Forms\Components\TextInput::make('max_concurrent_reviews')
                         ->label('Max Concurrent Reviews')
                         ->numeric()
@@ -62,8 +70,15 @@ class ReviewerProfileRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('review_availability_status')
-            ->columns([
-                Tables\Columns\TextColumn::make('review_availability_status')
+                    ->columns([
+                        Tables\Columns\TextColumn::make('reviewer_status')
+                            ->badge()
+                            ->colors([
+                                'warning' => 'pending',
+                                'success' => 'approved',
+                                'danger' => 'rejected',
+                            ]),
+                        Tables\Columns\TextColumn::make('review_availability_status')
                     ->badge()
                     ->colors([
                         'success' => 'Available',
@@ -88,6 +103,27 @@ class ReviewerProfileRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('approve')
+                    ->label('Approve')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Approve Reviewer')
+                    ->modalDescription('This will grant the user reviewer access.')
+                    ->visible(fn ($record) => $record->reviewer_status === 'pending')
+                    ->action(function ($record) {
+                        $record->update(['reviewer_status' => 'approved']);
+                        $record->user->addRole('reviewer');
+                    }),
+                Tables\Actions\Action::make('reject')
+                    ->label('Reject')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Reject Reviewer')
+                    ->modalDescription('This will reject the reviewer request.')
+                    ->visible(fn ($record) => $record->reviewer_status === 'pending')
+                    ->action(fn ($record) => $record->update(['reviewer_status' => 'rejected'])),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

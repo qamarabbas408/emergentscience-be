@@ -22,10 +22,11 @@ class RegisterTest extends TestCase
         ]);
 
         $response->assertStatus(201)
-            ->assertJsonStructure(['success', 'message', 'data' => ['user' => ['id', 'name', 'email', 'status'], 'token']])
+            ->assertJsonStructure(['success', 'message', 'data' => ['user' => ['id', 'name', 'email', 'status', 'roles'], 'token']])
             ->assertJsonPath('success', true)
             ->assertJsonPath('message', 'Registration successful.')
-            ->assertJsonPath('data.user.status', UserStatus::Active->value);
+            ->assertJsonPath('data.user.status', UserStatus::Active->value)
+            ->assertJsonPath('data.user.roles', ['author']);
 
         $this->assertDatabaseHas('users', [
             'email' => 'jane@example.com',
@@ -34,6 +35,9 @@ class RegisterTest extends TestCase
             'last_name' => 'Doe',
             'status' => UserStatus::Active->value,
         ]);
+
+        $user = User::where('email', 'jane@example.com')->first();
+        $this->assertEquals(['author'], $user->roles);
     }
 
     public function test_user_can_register_without_last_name(): void
